@@ -1,0 +1,331 @@
+@model ProMeet.Controllers.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<!-- Modern Register Section -->
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-md-6 col-lg-5">
+                <!-- Auth Card -->
+                <div class="card auth-card shadow-xl border-0 animate-fade-in-up">
+                    <div class="card-body p-5">
+                        <!-- Logo/Brand -->
+                        <div class="text-center mb-5">
+                            <div class="auth-brand mb-4">
+                                <i class="bi bi-person-plus-fill text-primary fs-1"></i>
+                            </div>
+                            <h2 class="fw-black mb-2 gradient-text">Create Account</h2>
+                            <p class="text-muted mb-0">Join thousands of professionals and clients on ProMeet</p>
+                        </div>
+
+                        <!-- Registration Form -->
+                        <form asp-action="Register" method="post" class="auth-form">
+                            @Html.AntiForgeryToken()
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="FirstName" type="text" class="form-control form-control-lg" id="firstName" placeholder="John" required>
+                                        <label for="firstName">
+                                            <i class="bi bi-person me-2"></i>First Name
+                                        </label>
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="LastName" type="text" class="form-control form-control-lg" id="lastName" placeholder="Doe" required>
+                                        <label for="lastName">
+                                            <i class="bi bi-person me-2"></i>Last Name
+                                        </label>
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input asp-for="Email" type="email" class="form-control form-control-lg" id="email" placeholder="name@example.com" required>
+                                <label for="email">
+                                    <i class="bi bi-envelope me-2"></i>Email Address
+                                </label>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input asp-for="Password" type="password" class="form-control form-control-lg" id="password" placeholder="Password" required>
+                                <label for="password">
+                                    <i class="bi bi-lock me-2"></i>Password
+                                </label>
+                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3" onclick="togglePassword('password')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input asp-for="ConfirmPassword" type="password" class="form-control form-control-lg" id="confirmPassword" placeholder="Confirm Password" required>
+                                <label for="confirmPassword">
+                                    <i class="bi bi-lock-check me-2"></i>Confirm Password
+                                </label>
+                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3" onclick="togglePassword('confirmPassword')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input asp-for="Terms" type="checkbox" class="form-check-input" id="terms" required>
+                                    <label class="form-check-label text-muted" asp-for="Terms">
+                                        I agree to the <a href="#" class="text-primary text-decoration-none fw-semibold">Terms & Conditions</a> and <a href="#" class="text-primary text-decoration-none fw-semibold">Privacy Policy</a>
+                                    </label>
+                                </div>
+                                <span asp-validation-for="Terms" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-gradient btn-lg">
+                                    <i class="bi bi-person-plus me-2"></i>Create Account
+                                </button>
+                            </div>
+
+                            <!-- Social Sign Up -->
+                            <div class="divider text-center mb-4">
+                                <span class="bg-white px-3 text-muted">or sign up with</span>
+                            </div>
+
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <i class="bi bi-google text-danger me-2"></i>Continue with Google
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <i class="bi bi-linkedin text-primary me-2"></i>Continue with LinkedIn
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Login Link -->
+                        <div class="text-center">
+                            <p class="text-muted mb-0">
+                                Already have an account? 
+                                <a asp-action="Login" class="text-decoration-none fw-semibold text-primary">Sign in</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benefits Section -->
+                <div class="text-center mt-4">
+                    <div class="benefits-section">
+                        <h6 class="text-muted mb-3">Why join ProMeet?</h6>
+                        <div class="row g-3">
+                            <div class="col-4">
+                                <div class="benefit-item">
+                                    <i class="bi bi-lightning text-warning fs-4 mb-2"></i>
+                                    <p class="small text-muted mb-0">Instant Booking</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="benefit-item">
+                                    <i class="bi bi-shield-check text-success fs-4 mb-2"></i>
+                                    <p class="small text-muted mb-0">Secure</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="benefit-item">
+                                    <i class="bi bi-graph-up text-primary fs-4 mb-2"></i>
+                                    <p class="small text-muted mb-0">Grow Business</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Additional client-side validation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Custom validation for terms checkbox
+            const termsCheckbox = document.getElementById('terms');
+            const termsError = document.querySelector('[data-valmsg-for="Terms"]');
+            
+            if (termsCheckbox && termsError) {
+                termsCheckbox.addEventListener('change', function() {
+                    if (!this.checked) {
+                        termsError.textContent = 'You must agree to the terms and conditions';
+                        termsError.classList.add('text-danger');
+                    } else {
+                        termsError.textContent = '';
+                        termsError.classList.remove('text-danger');
+                    }
+                });
+            }
+            
+            // Password strength indicator
+            const passwordInput = document.getElementById('password');
+            const passwordStrength = document.createElement('div');
+            passwordStrength.className = 'password-strength mt-2';
+            passwordStrength.innerHTML = '<div class="progress" style="height: 4px;"><div class="progress-bar" role="progressbar"></div></div><small class="text-muted"></small>';
+            
+            if (passwordInput) {
+                passwordInput.parentNode.appendChild(passwordStrength);
+                
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    const strength = calculatePasswordStrength(password);
+                    updatePasswordStrengthUI(strength);
+                });
+            }
+        });
+        
+
+        
+        function updatePasswordStrengthUI(strength) {
+            const progressBar = document.querySelector('.password-strength .progress-bar');
+            const strengthText = document.querySelector('.password-strength small');
+            
+            if (progressBar && strengthText) {
+                progressBar.style.width = strength + '%';
+                
+                if (strength < 25) {
+                    progressBar.className = 'progress-bar bg-danger';
+                    strengthText.textContent = 'Very Weak';
+                } else if (strength < 50) {
+                    progressBar.className = 'progress-bar bg-warning';
+                    strengthText.textContent = 'Weak';
+                } else if (strength < 75) {
+                    progressBar.className = 'progress-bar bg-info';
+                    strengthText.textContent = 'Medium';
+                } else {
+                    progressBar.className = 'progress-bar bg-success';
+                    strengthText.textContent = 'Strong';
+                }
+            }
+        }
+        
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggleBtn = field.parentNode.querySelector('.btn-link i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                toggleBtn.className = 'bi bi-eye-slash';
+            } else {
+                field.type = 'password';
+                toggleBtn.className = 'bi bi-eye';
+            }
+        }
+    </script>
+}
+
+<!-- Custom Styles -->
+<style>
+    .auth-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 25px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+
+    .auth-brand {
+        display: inline-block;
+        padding: 1rem;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-radius: 50%;
+        backdrop-filter: blur(10px);
+    }
+
+    .auth-form .form-floating {
+        position: relative;
+    }
+
+    .auth-form .form-floating .btn-link {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0;
+        z-index: 5;
+    }
+
+    .auth-form .form-floating .btn-link:hover {
+        color: var(--primary-purple);
+    }
+
+    .divider {
+        position: relative;
+        text-align: center;
+        margin: 2rem 0;
+    }
+
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #dee2e6, transparent);
+    }
+
+    .divider span {
+        position: relative;
+        background: white;
+        z-index: 2;
+    }
+
+    .benefits-section {
+        animation: fadeIn 1s ease-out 0.5s both;
+    }
+
+    .benefit-item {
+        padding: 1rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .benefit-item:hover {
+        transform: translateY(-5px);
+    }
+
+    @@media (max-width: 768px) {
+        .auth-section {
+            padding: 1rem 0;
+        }
+        
+        .auth-card {
+            margin: 0 1rem;
+        }
+        
+        .benefit-item {
+            padding: 0.75rem;
+        }
+    }
+</style>
+</script>

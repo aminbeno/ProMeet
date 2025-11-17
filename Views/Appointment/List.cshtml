@@ -1,0 +1,204 @@
+@model IEnumerable<ProMeet.Models.Appointment>
+
+@{
+    ViewData["Title"] = "My Appointments";
+    var upcomingAppointments = Model.Where(a => a.Status == AppointmentStatus.Pending || a.Status == AppointmentStatus.Confirmed).ToList();
+    var pastAppointments = Model.Where(a => a.Status == AppointmentStatus.Completed).ToList();
+    var cancelledAppointments = Model.Where(a => a.Status == AppointmentStatus.Canceled).ToList();
+}
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">My Appointments</h1>
+        <p class="lead text-muted">Manage and track all your bookings in one place.</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 text-center bg-primary-soft">
+                <div class="card-body">
+                    <i class="bi bi-calendar-check display-6 text-primary"></i>
+                    <h3 class="fw-bold mt-3 mb-0">@upcomingAppointments.Count()</h3>
+                    <p class="mb-0 text-muted">Upcoming</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 text-center bg-success-soft">
+                <div class="card-body">
+                    <i class="bi bi-check-circle display-6 text-success"></i>
+                    <h3 class="fw-bold mt-3 mb-0">@pastAppointments.Count()</h3>
+                    <p class="mb-0 text-muted">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 text-center bg-danger-soft">
+                <div class="card-body">
+                    <i class="bi bi-x-circle display-6 text-danger"></i>
+                    <h3 class="fw-bold mt-3 mb-0">@cancelledAppointments.Count()</h3>
+                    <p class="mb-0 text-muted">Cancelled</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 text-center bg-warning-soft">
+                <div class="card-body">
+                    <i class="bi bi-hourglass-split display-6 text-warning"></i>
+                    <h3 class="fw-bold mt-3 mb-0">@Model.Count(a => a.Status == AppointmentStatus.Pending)</h3>
+                    <p class="mb-0 text-muted">Pending</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-pills nav-fill mb-4" id="appointmentTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab">
+                <i class="bi bi-calendar-event me-2"></i>Upcoming
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="past-tab" data-bs-toggle="tab" data-bs-target="#past" type="button" role="tab">
+                <i class="bi bi-clock-history me-2"></i>Past
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cancelled-tab" data-bs-toggle="tab" data-bs-target="#cancelled" type="button" role="tab">
+                <i class="bi bi-x-circle me-2"></i>Cancelled
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="appointmentTabsContent">
+        <!-- Upcoming Appointments -->
+        <div class="tab-pane fade show active" id="upcoming" role="tabpanel">
+            @if (upcomingAppointments.Any())
+            {
+                foreach (var appointment in upcomingAppointments)
+                {
+                    <div class="card card-appointment mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center">
+                                    <img src="@appointment.Professional?.User?.PhotoURL ?? "/images/default-avatar.png"" class="avatar-lg rounded-circle" alt="Professional">
+                                </div>
+                                <div class="col-md-4">
+                                    <h5 class="fw-bold mb-1">@appointment.Professional?.User?.Name ?? "Professional"</h5>
+                                    <p class="text-muted mb-2">@appointment.Professional?.JobTitle ?? "Professional Service"</p>
+                                    <p class="small mb-0">
+                                        <i class="bi bi-calendar-event text-primary"></i> @appointment.Date.ToShortDateString()
+                                        <span class="ms-3"><i class="bi bi-clock text-success"></i> @appointment.StartTime</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    @if (appointment.Status == AppointmentStatus.Confirmed)
+                                    {
+                                        <span class="badge bg-success-soft text-success">Confirmed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning-soft text-warning">Pending</span>
+                                    }
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button class="btn btn-outline-primary btn-sm">Reschedule</button>
+                                    <button class="btn btn-outline-danger btn-sm">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center p-5 card-dashed">
+                    <i class="bi bi-calendar-x display-4 text-muted"></i>
+                    <h4 class="mt-4 fw-bold">No Upcoming Appointments</h4>
+                    <p class="text-muted mb-4">Ready to book your next appointment?</p>
+                    <a href="/Professional/List" class="btn btn-primary">
+                        <i class="bi bi-search me-2"></i>Find a Professional
+                    </a>
+                </div>
+            }
+        </div>
+
+        <!-- Past Appointments -->
+        <div class="tab-pane fade" id="past" role="tabpanel">
+            @if (pastAppointments.Any())
+            {
+                foreach (var appointment in pastAppointments)
+                {
+                    <div class="card card-appointment mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center">
+                                    <img src="@appointment.Professional?.User?.PhotoURL ?? "/images/default-avatar.png"" class="avatar-lg rounded-circle" alt="Professional">
+                                </div>
+                                <div class="col-md-5">
+                                    <h5 class="fw-bold mb-1">@appointment.Professional?.User?.Name ?? "Professional"</h5>
+                                    <p class="text-muted mb-2">@appointment.Professional?.JobTitle ?? "Professional Service"</p>
+                                    <p class="small mb-0">
+                                        <i class="bi bi-calendar-check text-success"></i> @appointment.Date.ToShortDateString()
+                                    </p>
+                                </div>
+                                <div class="col-md-5 text-end">
+                                    <a href="/Review/Create/@appointment.AppointmentID" class="btn btn-outline-primary btn-sm">Leave a Review</a>
+                                    <button class="btn btn-primary btn-sm">Book Again</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center p-5 card-dashed">
+                    <i class="bi bi-clock-history display-4 text-muted"></i>
+                    <h4 class="mt-4 fw-bold">No Past Appointments</h4>
+                    <p class="text-muted">Your completed appointments will appear here.</p>
+                </div>
+            }
+        </div>
+
+        <!-- Cancelled Appointments -->
+        <div class="tab-pane fade" id="cancelled" role="tabpanel">
+            @if (cancelledAppointments.Any())
+            {
+                foreach (var appointment in cancelledAppointments)
+                {
+                    <div class="card card-appointment mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center">
+                                    <img src="@appointment.Professional?.User?.PhotoURL ?? "/images/default-avatar.png"" class="avatar-lg rounded-circle" alt="Professional">
+                                </div>
+                                <div class="col-md-5">
+                                    <h5 class="fw-bold mb-1">@appointment.Professional?.User?.Name ?? "Professional"</h5>
+                                    <p class="text-muted mb-2">@appointment.Professional?.JobTitle ?? "Professional Service"</p>
+                                    <p class="small mb-0">
+                                        <i class="bi bi-calendar-x text-danger"></i> @appointment.Date.ToShortDateString()
+                                    </p>
+                                </div>
+                                <div class="col-md-5 text-end">
+                                    <button class="btn btn-primary btn-sm">Book Again</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center p-5 card-dashed">
+                    <i class="bi bi-x-circle display-4 text-muted"></i>
+                    <h4 class="mt-4 fw-bold">No Cancelled Appointments</h4>
+                    <p class="text-muted">Your cancelled appointments will appear here.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

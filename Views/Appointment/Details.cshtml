@@ -1,0 +1,471 @@
+@model Appointment
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+
+<!-- Header Section -->
+<section class="appointment-details-header py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/Appointment/List" class="text-decoration-none">My Appointments</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Appointment Details</li>
+                    </ol>
+                </nav>
+                <h1 class="display-4 fw-bold mb-2 gradient-text">Appointment Details</h1>
+                <p class="lead text-muted">View and manage your appointment information</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="/Appointment/List" class="btn btn-outline-primary btn-lg" style="border-radius: 15px;">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Appointment Details -->
+<section class="appointment-details py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Main Information -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg mb-4" style="border-radius: 25px;">
+                    <div class="card-header bg-gradient text-white" style="border-radius: 25px 25px 0 0;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">
+                                <i class="bi bi-calendar-check me-2"></i>Appointment Information
+                            </h4>
+                            <span class="status-badge status-@Model.Status.ToString().ToLower()">
+                                @Model.Status
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body p-5">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="detail-item">
+                                    <div class="detail-label">Date & Time</div>
+                                    <div class="detail-value">
+                                        <i class="bi bi-calendar me-2"></i>
+                                        @Model.Date.ToString("MMMM dd, yyyy")
+                                    </div>
+                                    <div class="detail-subvalue">
+                                        <i class="bi bi-clock me-2"></i>
+                                        @Model.StartTime.ToString("hh:mm tt") - @Model.EndTime.ToString("hh:mm tt")
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="detail-item">
+                                    <div class="detail-label">Service</div>
+                                    <div class="detail-value">
+                                        <i class="bi bi-tag me-2"></i>
+                                        @Model.Professional?.Specialty
+                                    </div>
+                                    <div class="detail-subvalue">
+                                        <span class="service-category">@Model.Professional?.Category?.Name</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="detail-item">
+                                    <div class="detail-label">Duration</div>
+                                    <div class="detail-value">
+                                        <i class="bi bi-hourglass-split me-2"></i>
+                                        @((Model.EndTime - Model.StartTime).TotalMinutes) minutes
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="detail-item">
+                                    <div class="detail-label">Price</div>
+                                    <div class="detail-value price">
+                                        <i class="bi bi-currency-dollar me-2"></i>
+                                        $@Model.Professional?.Price
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-4">
+                                <div class="detail-item">
+                                    <div class="detail-label">Notes</div>
+                                    <div class="detail-value notes">
+                                        @if (!string.IsNullOrEmpty(Model.ReasonForVisit))
+                                        {
+                                            @Model.ReasonForVisit
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No additional notes provided</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="detail-item">
+                                    <div class="detail-label">Created</div>
+                                    <div class="detail-value">
+                                        <i class="bi bi-plus-circle me-2"></i>
+                                        @Model.CreatedAt.ToString("MMM dd, yyyy")
+                                    </div>
+                                    <div class="detail-subvalue">
+                                        @Model.CreatedAt.ToString("hh:mm tt")
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="detail-item">
+                                    <div class="detail-label">Last Updated</div>
+                                    <div class="detail-value">
+                                        <i class="bi bi-arrow-repeat me-2"></i>
+                                        @Model.UpdatedAt.ToString("MMM dd, yyyy")
+                                    </div>
+                                    <div class="detail-subvalue">
+                                        @Model.UpdatedAt.ToString("hh:mm tt")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="card border-0 shadow" style="border-radius: 25px;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">Actions</h5>
+                        <div class="d-flex gap-3 flex-wrap">
+                            @if (Model.Status == AppointmentStatus.Pending)
+                            {
+                                <button type="button" class="btn btn-success btn-lg" onclick="updateStatus('@Model.AppointmentID', 'Confirmed')">
+                                    <i class="bi bi-check"></i> Confirm Appointment
+                                </button>
+                                <button type="button" class="btn btn-danger btn-lg" onclick="updateStatus('@Model.AppointmentID', 'Cancelled')">
+                                    <i class="bi bi-x"></i> Cancel Appointment
+                                </button>
+                            }
+                            else if (Model.Status == AppointmentStatus.Confirmed)
+                            {
+                                <button type="button" class="btn btn-info btn-lg" onclick="updateStatus('@Model.AppointmentID', 'Completed')">
+                                    <i class="bi bi-check-circle"></i> Mark as Completed
+                                </button>
+                                <button type="button" class="btn btn-warning btn-lg" onclick="updateStatus('@Model.AppointmentID', 'Cancelled')">
+                                    <i class="bi bi-x-circle"></i> Cancel Appointment
+                                </button>
+                            }
+                            
+                            @if (Model.Status == AppointmentStatus.Confirmed || Model.Status == AppointmentStatus.Pending)
+                            {
+                                <button type="button" class="btn btn-outline-primary btn-lg" onclick="rescheduleAppointment()">
+                                    <i class="bi bi-calendar"></i> Reschedule
+                                </button>
+                            }
+                            
+                            <button type="button" class="btn btn-outline-secondary btn-lg" onclick="printAppointment()">
+                                <i class="bi bi-printer"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Professional Information -->
+                <div class="card border-0 shadow-lg mb-4" style="border-radius: 25px;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">
+                            <i class="bi bi-person-workspace me-2"></i>Professional
+                        </h5>
+                        <div class="professional-info">
+                            <div class="professional-avatar mb-3">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            <h6 class="fw-bold mb-1">@Model.Professional?.User?.Name</h6>
+                            <p class="text-muted mb-3">@Model.Professional?.Category?.Name</p>
+                            <div class="professional-details">
+                                <div class="detail-row">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    <span>@Model.Professional?.User?.Email</span>
+                                </div>
+                                <div class="detail-row">
+                                    <i class="bi bi-telephone me-2"></i>
+                                    <span>@Model.Professional?.User?.Phone</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Meeting Information -->
+                <div class="card border-0 shadow-lg mb-4" style="border-radius: 25px;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">
+                            <i class="bi bi-camera-video me-2"></i>Meeting Details
+                        </h5>
+                        <div class="meeting-info">
+                            <div class="meeting-type mb-3">
+                                <div class="detail-label">Meeting Type</div>
+                                <div class="detail-value">@Model.Professional?.ConsultationType</div>
+                            </div>
+                            <div class="meeting-link mb-3">
+                                <div class="detail-label">Meeting Link</div>
+                                <div class="detail-value">
+                                    <a href="#" class="text-decoration-none">
+                                        <i class="bi bi-link-45deg me-1"></i>
+                                        Join Meeting
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="meeting-reminder">
+                                <div class="alert alert-info" style="border-radius: 15px;">
+                                    <i class="bi bi-bell me-2"></i>
+                                    You'll receive a reminder 1 hour before the appointment.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Appointment Timeline -->
+                <div class="card border-0 shadow-lg" style="border-radius: 25px;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">
+                            <i class="bi bi-clock-history me-2"></i>Timeline
+                        </h5>
+                        <div class="timeline">
+                            <div class="timeline-item active">
+                                <div class="timeline-icon">
+                                    <i class="bi bi-plus-circle"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">Appointment Created</div>
+                                    <div class="timeline-date">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</div>
+                                </div>
+                            </div>
+                            
+                            @if (Model.Status != AppointmentStatus.Pending)
+                            {
+                                <div class="timeline-item active">
+                                    <div class="timeline-icon">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Appointment @Model.Status</div>
+                                        <div class="timeline-date">@Model.UpdatedAt.ToString("MMM dd, yyyy HH:mm")</div>
+                                    </div>
+                                </div>
+                            }
+                            
+                            @if (Model.Status == AppointmentStatus.Confirmed)
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">
+                                        <i class="bi bi-calendar-check"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Appointment Scheduled</div>
+                                        <div class="timeline-date">@Model.Date.ToString("MMM dd, yyyy") @Model.StartTime.ToString("HH:mm")</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+    .appointment-details-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    }
+    
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .professional-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+        margin: 0 auto;
+    }
+    
+    .detail-item {
+        margin-bottom: 1.5rem;
+    }
+    
+    .detail-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .detail-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.25rem;
+    }
+    
+    .detail-subvalue {
+        font-size: 0.95rem;
+        color: #6c757d;
+    }
+    
+    .detail-value.price {
+        color: #28a745;
+        font-size: 1.3rem;
+    }
+    
+    .detail-value.notes {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .status-confirmed {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+    
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .service-category {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .professional-details .detail-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: #6c757d;
+    }
+    
+    .timeline {
+        position: relative;
+    }
+    
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .timeline-icon {
+        width: 40px;
+        height: 40px;
+        background: #e9ecef;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .timeline-item.active .timeline-icon {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .timeline-title {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.25rem;
+    }
+    
+    .timeline-date {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .btn {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    function updateStatus(appointmentId, newStatus) {
+        if (confirm(`Are you sure you want to mark this appointment as ${newStatus.toLowerCase()}?`)) {
+            // Implement status update logic
+            alert(`Appointment ${appointmentId} status updated to ${newStatus}`);
+            // In a real implementation, this would make an AJAX call to update the status
+            location.reload();
+        }
+    }
+    
+    function rescheduleAppointment() {
+        alert('Reschedule feature will be implemented soon.');
+    }
+    
+    function printAppointment() {
+        window.print();
+    }
+</script>

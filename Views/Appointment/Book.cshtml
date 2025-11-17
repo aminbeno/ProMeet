@@ -1,0 +1,178 @@
+@model ProMeet.Controllers.BookAppointmentViewModel
+
+@{
+    ViewData["Title"] = "Book Appointment";
+}
+
+<div class="container my-5">
+    <div class="row g-5">
+        <!-- Professional Info Sidebar -->
+        <div class="col-lg-4">
+            <div class="card sticky-top" style="top: 100px;">
+                <div class="card-body text-center">
+                    <img src="@Model.User.PhotoURL" class="avatar-xl rounded-circle mb-3" alt="@Model.User.Name">
+                    <h4 class="fw-bold mb-1">@Model.User.Name</h4>
+                    <p class="text-muted mb-3">@Model.JobTitle</p>
+                    <hr>
+                    <div class="text-start">
+                        <p class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i>@Model.User.City, @Model.User.Country</p>
+                        <p class="mb-2"><i class="bi bi-laptop text-success me-2"></i>@Model.ConsultationType</p>
+                        <p class="mb-0"><i class="bi bi-star-fill text-warning me-2"></i>@Model.Rating/5.0</p>
+                    </div>
+                    <hr>
+                    <h3 class="fw-bold text-primary mb-0">@Model.Price DH</h3>
+                    <p class="text-muted small">per session</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title fw-bold mb-0">Schedule Your Appointment</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="/Appointment/Confirm">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <input type="hidden" asp-for="ProfessionalID" />
+
+                        <!-- Step 1: Date Selection -->
+                        <div id="step-1">
+                            <div class="mb-4">
+                                <label asp-for="Date" class="form-label fw-bold">Select a Date</label>
+                                <input asp-for="Date" type="date" class="form-control form-control-lg" />
+                                <span asp-validation-for="Date" class="text-danger"></span>
+                                <small class="text-muted">Choose your preferred appointment date.</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="TimeSlot" class="form-label fw-bold">Choose a Time Slot</label>
+                                <div class="row g-2">
+                                    @foreach (var timeSlot in new[] { "09:00", "10:00", "11:00", "14:00", "15:00", "16:00" })
+                                    {
+                                        <div class="col-4">
+                                            <input type="radio" class="btn-check" asp-for="TimeSlot" id="time-@timeSlot" value="@timeSlot">
+                                            <label class="btn btn-outline-primary w-100" for="time-@timeSlot">@timeSlot</label>
+                                        </div>
+                                    }
+                                </div>
+                                <span asp-validation-for="TimeSlot" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary" onclick="validateAndGoToStep(2)">Next <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Confirmation -->
+                        <div id="step-2" style="display: none;">
+                            <div class="mb-4">
+                                <h5 class="fw-bold">Confirm Your Details</h5>
+                                <p>Please review your appointment details below before confirming.</p>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Reason" class="form-label fw-bold">Reason for Visit (Optional)</label>
+                                <textarea asp-for="Reason" class="form-control" rows="4" placeholder="Briefly describe your reason for consultation..."></textarea>
+                                <span asp-validation-for="Reason" class="text-danger"></span>
+                            </div>
+
+                            <div class="alert alert-info d-flex align-items-center">
+                                <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                                <div>
+                                    <strong>Note:</strong> A confirmation request will be sent to the professional. Your appointment is not final until confirmed.
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-secondary" onclick="goToStep(1)"><i class="bi bi-arrow-left"></i> Back</button>
+                                <button type="submit" class="btn btn-primary">Confirm Booking <i class="bi bi-check-circle"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function goToStep(step) {
+            if (step === 1) {
+                document.getElementById('step-1').style.display = 'block';
+                document.getElementById('step-2').style.display = 'none';
+            } else if (step === 2) {
+                document.getElementById('step-1').style.display = 'none';
+                document.getElementById('step-2').style.display = 'block';
+            }
+        }
+        
+        function validateAndGoToStep(step) {
+            // Get form and validate step 1 fields
+            const form = document.querySelector('form');
+            const dateInput = document.querySelector('[name="Date"]');
+            const timeSlotInputs = document.querySelectorAll('[name="TimeSlot"]');
+            
+            let isValid = true;
+            
+            // Validate date
+            if (!dateInput.value) {
+                dateInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                dateInput.classList.remove('is-invalid');
+                dateInput.classList.add('is-valid');
+                
+                // Check if date is not in the past
+                const selectedDate = new Date(dateInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (selectedDate < today) {
+                    dateInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+            }
+            
+            // Validate time slot
+            const selectedTimeSlot = Array.from(timeSlotInputs).find(input => input.checked);
+            if (!selectedTimeSlot) {
+                // Add validation message for time slot
+                const timeSlotContainer = document.querySelector('.row.g-2');
+                let errorMsg = timeSlotContainer.querySelector('.invalid-feedback');
+                if (!errorMsg) {
+                    errorMsg = document.createElement('div');
+                    errorMsg.className = 'invalid-feedback d-block';
+                    errorMsg.textContent = 'Please select a time slot';
+                    timeSlotContainer.parentNode.appendChild(errorMsg);
+                }
+                isValid = false;
+            } else {
+                // Remove any existing error messages
+                const timeSlotContainer = document.querySelector('.row.g-2');
+                const errorMsg = timeSlotContainer.parentNode.querySelector('.invalid-feedback');
+                if (errorMsg) {
+                    errorMsg.remove();
+                }
+            }
+            
+            if (isValid) {
+                goToStep(step);
+            }
+        }
+        
+        // Set minimum date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.querySelector('[name="Date"]');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+            }
+        });
+    </script>
+}

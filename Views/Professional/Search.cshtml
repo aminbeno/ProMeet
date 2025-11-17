@@ -1,0 +1,326 @@
+@model ProMeet.Controllers.ProfessionalSearchViewModel
+@{
+    ViewData["Title"] = "Find Professionals";
+}
+
+<!-- Search Header -->
+<section class="search-header py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-3 gradient-text">Find Professionals</h1>
+                <p class="lead text-muted mb-4">Discover top-rated professionals in your area</p>
+                
+                <!-- Search Bar -->
+                <form method="get" action="/Professional/Search" class="search-form">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-light border-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-0 bg-light" 
+                               name="query" placeholder="Search by name, specialty, or keywords..." 
+                               value="@Model.SearchQuery">
+                        <button type="submit" class="btn btn-gradient px-4">
+                            <i class="bi bi-search me-1"></i> Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filters and Results -->
+<section class="search-content py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Filters Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">
+                            <i class="bi bi-funnel me-2"></i> Filters
+                        </h5>
+                        
+                        <form method="get" action="/Professional/Search" id="filterForm">
+                            <input type="hidden" name="query" value="@Model.SearchQuery">
+                            
+                            <!-- Category Filter -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Category</label>
+                                <select class="form-select" name="category">
+                                    <option value="">All Categories</option>
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        <option value="@category" selected="@(Model.SelectedCategory == category ? "selected" : null)">
+                                            @category
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            
+                            <!-- City Filter -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">City</label>
+                                <select class="form-select" name="city">
+                                    <option value="">All Cities</option>
+                                    @foreach (var city in Model.Cities)
+                                    {
+                                        <option value="@city" selected="@(Model.SelectedCity == city ? "selected" : null)">
+                                            @city
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            
+                            <!-- Price Range -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Max Price ($)</label>
+                                <input type="number" class="form-control" name="maxPrice" 
+                                       placeholder="Maximum price" value="@Model.MaxPrice">
+                            </div>
+                            
+                            <!-- Sort By -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Sort By</label>
+                                <select class="form-select" name="sortBy">
+                                    <option value="name" selected="@(Model.SelectedSortBy == "name" ? "selected" : null)">
+                                        Name (A-Z)
+                                    </option>
+                                    <option value="rating" selected="@(Model.SelectedSortBy == "rating" ? "selected" : null)">
+                                        Highest Rated
+                                    </option>
+                                    <option value="price-low" selected="@(Model.SelectedSortBy == "price-low" ? "selected" : null)">
+                                        Price (Low to High)
+                                    </option>
+                                    <option value="price-high" selected="@(Model.SelectedSortBy == "price-high" ? "selected" : null)">
+                                        Price (High to Low)
+                                    </option>
+                                    <option value="experience" selected="@(Model.SelectedSortBy == "experience" ? "selected" : null)">
+                                        Most Experienced
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-funnel me-1"></i> Apply Filters
+                            </button>
+                            
+                            @if (!string.IsNullOrEmpty(Model.SearchQuery) || !string.IsNullOrEmpty(Model.SelectedCategory) || 
+                                 !string.IsNullOrEmpty(Model.SelectedCity) || Model.MaxPrice.HasValue)
+                            {
+                                <a href="/Professional/Search" class="btn btn-outline-secondary w-100 mt-2">
+                                    <i class="bi bi-x-circle me-1"></i> Clear Filters
+                                </a>
+                            }
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div class="col-lg-9">
+                <!-- Results Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="fw-bold mb-1">
+                            <i class="bi bi-people me-2"></i> 
+                            @Model.TotalResults Professional@(Model.TotalResults != 1 ? "s" : "") Found
+                        </h5>
+                        @if (!string.IsNullOrEmpty(Model.SearchQuery))
+                        {
+                            <p class="text-muted mb-0">for "@Model.SearchQuery"</p>
+                        }
+                    </div>
+                </div>
+                
+                @if (Model.Professionals.Any())
+                {
+                    <div class="row">
+                        @foreach (var professional in Model.Professionals)
+                        {
+                            <div class="col-md-6 col-xl-4 mb-4">
+                                <div class="card professional-card h-100 border-0 shadow-sm" style="border-radius: 20px;">
+                                    <div class="card-body p-4">
+                                        <div class="text-center mb-3">
+                                            @if (!string.IsNullOrEmpty(professional.User.PhotoURL))
+                                            {
+                                                <img src="@professional.User.PhotoURL" alt="@professional.User.Name" 
+                                                     class="professional-photo mb-3">
+                                            }
+                                            else
+                                            {
+                                                <div class="professional-avatar mb-3">
+                                                    <i class="bi bi-person-circle"></i>
+                                                </div>
+                                            }
+                                            <h5 class="fw-bold mb-1">@professional.User.Name</h5>
+                                            <p class="text-muted mb-2">@professional.JobTitle</p>
+                                        </div>
+                                        
+                                        <div class="professional-details mb-3">
+                                            <p class="mb-2">
+                                                <i class="bi bi-briefcase me-2 text-primary"></i>
+                                                @professional.Specialty
+                                            </p>
+                                            <p class="mb-2">
+                                                <i class="bi bi-geo-alt me-2 text-primary"></i>
+                                                @professional.User.City
+                                            </p>
+                                            <p class="mb-2">
+                                                <i class="bi bi-clock me-2 text-primary"></i>
+                                                @professional.Experience experience
+                                            </p>
+                                        </div>
+                                        
+                                        <div class="professional-rating mb-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="rating-stars">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        <i class="bi bi-star@(i <= professional.Rating ? "-fill text-warning" : " text-muted")"></i>
+                                                    }
+                                                    <span class="ms-2 text-muted">@professional.Rating.ToString("F1")</span>
+                                                </div>
+                                                <div class="price-tag">
+                                                    <span class="fw-bold text-primary">$@professional.Price</span>
+                                                    <small class="text-muted">/hr</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="professional-actions">
+                                            <a href="/Professional/Details/@professional.ProfessionalID" 
+                                               class="btn btn-gradient w-100 mb-2">
+                                                <i class="bi bi-eye me-1"></i> View Profile
+                                            </a>
+                                            <a href="/Appointment/Book/@professional.ProfessionalID" 
+                                               class="btn btn-outline-primary w-100">
+                                                <i class="bi bi-calendar-plus me-1"></i> Book Now
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-search display-1 text-muted mb-4"></i>
+                        <h5 class="text-muted">No professionals found</h5>
+                        <p class="text-muted">Try adjusting your search criteria or filters.</p>
+                        <a href="/Professional/Search" class="btn btn-primary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to All Professionals
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+    .search-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    }
+    
+    .search-form .input-group {
+        border-radius: 50px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .search-form .form-control {
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .search-form .btn-gradient {
+        border-radius: 0 50px 50px 0;
+        padding: 1rem 2rem;
+        font-weight: 600;
+    }
+    
+    .professional-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .professional-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+    }
+    
+    .professional-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e9ecef;
+    }
+    
+    .professional-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        margin: 0 auto;
+    }
+    
+    .professional-details p {
+        font-size: 0.9rem;
+    }
+    
+    .rating-stars {
+        font-size: 0.9rem;
+    }
+    
+    .price-tag {
+        font-size: 1rem;
+    }
+    
+    .form-select, .form-control {
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-select:focus, .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-gradient {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white !important;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+</style>
+
+<script>
+    // Auto-submit form when filters change
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterForm = document.getElementById('filterForm');
+        const filterElements = filterForm.querySelectorAll('select, input');
+        
+        filterElements.forEach(element => {
+            element.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        });
+    });
+</script>

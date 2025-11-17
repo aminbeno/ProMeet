@@ -1,0 +1,49 @@
+@model ProMeet.Models.Appointment
+
+@{
+    ViewData["Title"] = "Booking Confirmed";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card text-center shadow-lg">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill display-1 text-success"></i>
+                    </div>
+
+                    <h2 class="fw-bold mb-3">Appointment Request Sent!</h2>
+                    <p class="text-muted mb-4">Your appointment request has been successfully sent to the professional. You will receive a confirmation email once it is approved.</p>
+
+                    <div class="card bg-light border-0 p-4 mb-4 text-start">
+                        <h5 class="fw-bold mb-4">Appointment Summary</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="text-muted small mb-1">Professional</p>
+                                <p class="fw-bold mb-0">@Model.Professional.User.Name</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="text-muted small mb-1">Date</p>
+                                <p class="fw-bold mb-0">@Model.Date.ToLongDateString()</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="text-muted small mb-1">Time</p>
+                                <p class="fw-bold mb-0">@Model.StartTime</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="text-muted small mb-1">Status</p>
+                                <span class="badge bg-warning-soft text-warning">Pending Confirmation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="/Appointment/List" class="btn btn-primary btn-lg">View My Appointments</a>
+                        <a href="/" class="btn btn-outline-secondary">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

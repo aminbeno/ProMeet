@@ -1,51 +1,50 @@
-﻿using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProMeet.Models
 {
-    /// <summary>
-    /// Représente la disponibilité d'un professionnel pour un jour donné.
-    /// </summary>
     public class Availability
     {
-        /// <summary>
-        /// Identifiant de la disponibilité.
-        /// </summary>
-        [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+        [BsonElement("availabilityId")]
         public int AvailabilityID { get; set; }
-
-        /// <summary>
-        /// Identifiant du professionnel.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("professionalId")]
         public int ProfessionalID { get; set; }
-
-        /// <summary>
-        /// Jour de la semaine (ex: "Lundi").
-        /// </summary>
-        [Required]
-        [StringLength(10)]
-        public string DayOfWeek { get; set; }
-
-        /// <summary>
-        /// Heure de début de disponibilité.
-        /// </summary>
-        [Required]
-        public TimeSpan StartHour { get; set; }
-
-        /// <summary>
-        /// Heure de fin de disponibilité.
-        /// </summary>
-        [Required]
-        public TimeSpan EndHour { get; set; }
-
-        /// <summary>
-        /// Indique si c'est un jour de repos.
-        /// </summary>
-        public bool IsRestDay { get; set; }
-
-        /// <summary>
-        /// Informations sur le professionnel.
-        /// </summary>
-        public Professional Professional { get; set; }
+        
+        [BsonElement("dayOfWeek")]
+        public int DayOfWeek { get; set; }
+        
+        [BsonElement("startTime")]
+        public TimeSpan StartTime { get; set; }
+        
+        [BsonElement("endTime")]
+        public TimeSpan EndTime { get; set; }
+        
+        [BsonElement("isAvailable")]
+        public bool IsAvailable { get; set; } = true;
+        
+        // Backward compatibility properties
+        [BsonIgnore]
+        public TimeSpan EndHour { get => EndTime; set => EndTime = value; }
+        
+        [BsonIgnore]
+        public TimeSpan StartHour { get => StartTime; set => StartTime = value; }
+        
+        [BsonIgnore]
+        public bool IsRestDay { get => !IsAvailable; set => IsAvailable = !value; }
+        
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("updatedAt")]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        // Nested document for related data
+        [BsonElement("professional")]
+        public Professional? Professional { get; set; }
     }
 }

@@ -1,51 +1,43 @@
-﻿using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProMeet.Models
 {
-    /// <summary>
-    /// Représente un message échangé dans une conversation.
-    /// </summary>
     public class Message
     {
-        /// <summary>
-        /// Identifiant du message.
-        /// </summary>
-        [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+        [BsonElement("messageId")]
         public int MessageID { get; set; }
-
-        /// <summary>
-        /// Identifiant de la conversation.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("chatId")]
         public int ChatID { get; set; }
-
-        /// <summary>
-        /// Identifiant de l'expéditeur du message.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("senderId")]
         public int SenderID { get; set; }
-
-        /// <summary>
-        /// Contenu du message.
-        /// </summary>
-        [Required]
-        [StringLength(500)]
-        public string Content { get; set; }
-
-        /// <summary>
-        /// Date et heure d'envoi du message.
-        /// </summary>
-        [Required]
-        public DateTime Timestamp { get; set; }
-
-        /// <summary>
-        /// Informations sur la conversation.
-        /// </summary>
-        public Chat Chat { get; set; }
-
-        /// <summary>
-        /// Informations sur l'expéditeur.
-        /// </summary>
-        public User Sender { get; set; }
+        
+        [BsonElement("senderType")]
+        public string SenderType { get; set; } = string.Empty; // "Client" or "Professional"
+        
+        [BsonElement("content")]
+        public string Content { get; set; } = string.Empty;
+        
+        [BsonElement("timestamp")]
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("isRead")]
+        public bool IsRead { get; set; } = false;
+        
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("updatedAt")]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        // Nested document for sender information
+        [BsonElement("sender")]
+        public User? Sender { get; set; }
     }
 }

@@ -1,0 +1,592 @@
+@model ProMeet.Models.Professional
+
+@{
+    ViewData["Title"] = Model.User.Name;
+}
+
+<!-- Professional Details Hero Section -->
+<div class="professional-hero-section">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1 class="display-4 fw-bold text-white mb-3">Professional Profile</h1>
+            <p class="lead text-white-50">Discover expertise and book your consultation</p>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Professional Details Modern Styling */
+.professional-hero-section {
+    background: linear-gradient(135deg, var(--deep-blue) 0%, var(--primary-blue) 100%);
+    padding: 4rem 0 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.professional-hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="40%"><stop offset="0%" stop-color="rgba(255,255,255,.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><rect width="100" height="20" fill="url(%23a)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Professional Card */
+.professional-card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: none;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.professional-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.profile-image-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--white);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+}
+
+.profile-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.profile-image-wrapper:hover .profile-image-overlay {
+    opacity: 1;
+}
+
+.profile-image-overlay i {
+    color: var(--white);
+    font-size: 1.5rem;
+}
+
+.job-title {
+    color: var(--primary-blue);
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.rating-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rating-text {
+    color: var(--amber);
+    font-weight: 500;
+}
+
+.location-info {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.price-tag {
+    text-align: center;
+}
+
+.price-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--deep-blue);
+}
+
+.price-unit {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.btn-book {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-book:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 123, 255, 0.3);
+}
+
+.btn-message {
+    border: 2px solid var(--primary-blue);
+    color: var(--primary-blue);
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-message:hover {
+    background: var(--primary-blue);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+/* Content Card */
+.content-card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: none;
+    overflow: hidden;
+}
+
+.modern-tabs {
+    border-bottom: 2px solid var(--light-gray);
+}
+
+.modern-tabs .nav-link {
+    border: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.modern-tabs .nav-link:hover {
+    color: var(--primary-blue);
+}
+
+.modern-tabs .nav-link.active {
+    color: var(--primary-blue);
+    background: none;
+}
+
+.modern-tabs .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
+    border-radius: 3px 3px 0 0;
+}
+
+/* Section Styling */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    color: var(--deep-blue);
+    font-weight: 600;
+    margin: 0;
+}
+
+.section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--light-gray) 50%, transparent 100%);
+    margin: 2rem 0;
+}
+
+.content-section {
+    margin-bottom: 1.5rem;
+}
+
+.section-text {
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+/* Services Grid */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.service-card {
+    background: var(--light-gray);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.service-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.service-title {
+    color: var(--deep-blue);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.service-description {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Reviews */
+.review-count {
+    background: var(--amber);
+    color: var(--white);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.reviews-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.review-card {
+    background: var(--light-gray);
+    border-radius: 15px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.reviewer-avatar {
+    font-size: 2.5rem;
+    color: var(--primary-blue);
+}
+
+.reviewer-name {
+    color: var(--deep-blue);
+    font-weight: 600;
+    margin: 0;
+}
+
+.review-date {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.review-rating {
+    color: var(--amber);
+}
+
+.review-text {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--light-gray);
+    margin-bottom: 1rem;
+}
+
+.empty-state-title {
+    color: var(--deep-blue);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-text {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive Design */
+@@media (max-width: 768px) {
+    .professional-hero-section {
+        padding: 2rem 0 1rem;
+    }
+    
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .service-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .review-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .action-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+</style>
+
+<div class="container py-5">
+    <div class="row g-5">
+        <!-- Left Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 2rem;">
+                <div class="professional-card">
+                    <div class="card-body text-center p-4">
+                        <div class="profile-image-wrapper">
+                            <img src="@Model.User.PhotoURL" class="profile-image" alt="@Model.User.Name">
+                            <div class="profile-image-overlay">
+                                <i class="bi bi-camera-fill"></i>
+                            </div>
+                        </div>
+                        <h3 class="fw-bold text-deep-blue mb-2">@Model.User.Name</h3>
+                        <p class="job-title">@Model.JobTitle</p>
+                        <div class="rating-container mb-3">
+                            <div class="rating-stars me-2">
+                                @for (int i = 0; i < 5; i++)
+                                {
+                                    <i class="bi @(i < Model.Rating ? "bi-star-fill text-amber" : "bi-star")"></i>
+                                }
+                            </div>
+                            <span class="rating-text">(@Model.Rating.ToString("0.0"))</span>
+                        </div>
+                        <div class="location-info">
+                            <i class="bi bi-geo-alt-fill me-1"></i>
+                            <span>@Model.User.City, @Model.User.Country</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light p-4 border-0">
+                        <div class="price-tag mb-3">
+                            <span class="price-amount">@Model.Price DH</span>
+                            <span class="price-unit">/ session</span>
+                        </div>
+                        <div class="action-buttons">
+                            <a href="/Appointment/Book/@Model.ProfessionalID" class="btn btn-primary btn-lg btn-book">
+                                <i class="bi bi-calendar-check me-2"></i>Book Appointment
+                            </a>
+                            <button class="btn btn-outline-secondary btn-message">
+                                <i class="bi bi-chat-dots me-2"></i>Send Message
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Content -->
+        <div class="col-lg-8">
+            <div class="content-card">
+                <div class="card-header bg-white p-0 border-bottom-0">
+                    <ul class="nav nav-tabs nav-fill modern-tabs" id="profileTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab" aria-controls="about" aria-selected="true">
+                                <i class="bi bi-person me-2"></i>About
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services" type="button" role="tab" aria-controls="services" aria-selected="false">
+                                <i class="bi bi-briefcase me-2"></i>Services
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                                <i class="bi bi-star me-2"></i>Reviews
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body p-4">
+                    <div class="tab-content" id="profileTabsContent">
+                        <!-- About Tab -->
+                        <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
+                            <div class="section-header">
+                                <h4 class="section-title">
+                                    <i class="bi bi-person-circle me-2"></i>Biography
+                                </h4>
+                            </div>
+                            <div class="content-section">
+                                <p class="section-text">@Model.Bio</p>
+                            </div>
+                            
+                            <div class="section-divider"></div>
+                            
+                            <div class="section-header">
+                                <h4 class="section-title">
+                                    <i class="bi bi-graph-up me-2"></i>Experience
+                                </h4>
+                            </div>
+                            <div class="content-section">
+                                <p class="section-text">@Model.Experience</p>
+                            </div>
+                            
+                            <div class="section-divider"></div>
+                            
+                            <div class="section-header">
+                                <h4 class="section-title">
+                                    <i class="bi bi-award me-2"></i>Degrees & Certifications
+                                </h4>
+                            </div>
+                            <div class="content-section">
+                                <p class="section-text">@Model.Degrees</p>
+                            </div>
+                        </div>
+
+                        <!-- Services Tab -->
+                        <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
+                            <div class="section-header">
+                                <h4 class="section-title">
+                                    <i class="bi bi-briefcase me-2"></i>Specialties & Services
+                                </h4>
+                            </div>
+                            <div class="services-grid">
+                                <div class="service-card">
+                                    <div class="service-icon">
+                                        <i class="bi bi-check-circle-fill text-green"></i>
+                                    </div>
+                                    <div class="service-content">
+                                        <h5 class="service-title">Specialty</h5>
+                                        <p class="service-description">@Model.Specialty</p>
+                                    </div>
+                                </div>
+                                <div class="service-card">
+                                    <div class="service-icon">
+                                        <i class="bi bi-laptop text-primary"></i>
+                                    </div>
+                                    <div class="service-content">
+                                        <h5 class="service-title">Consultation Type</h5>
+                                        <p class="service-description">@Model.ConsultationType</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reviews Tab -->
+                        <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                            <div class="section-header">
+                                <h4 class="section-title">
+                                    <i class="bi bi-star me-2"></i>Client Feedback
+                                </h4>
+                                <span class="review-count">@Model.Reviews?.Count() reviews</span>
+                            </div>
+                            @if (Model.Reviews != null && Model.Reviews.Any())
+                            {
+                                <div class="reviews-container">
+                                    @foreach (var review in Model.Reviews)
+                                    {
+                                        <div class="review-card">
+                                            <div class="review-header">
+                                                <div class="reviewer-info">
+                                                    <div class="reviewer-avatar">
+                                                        <i class="bi bi-person-circle"></i>
+                                                    </div>
+                                                    <div class="reviewer-details">
+                                                        <h6 class="reviewer-name">Anonymous Client</h6>
+                                                        <p class="review-date">@review.DateProvided.ToShortDateString()</p>
+                                                    </div>
+                                                </div>
+                                                <div class="review-rating">
+                                                    @for (int i = 0; i < 5; i++)
+                                                    {
+                                                        <i class="bi @(i < review.Rating ? "bi-star-fill text-amber" : "bi-star")"></i>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="review-content">
+                                                <p class="review-text">@review.Comment</p>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="bi bi-star"></i>
+                                    </div>
+                                    <h5 class="empty-state-title">No reviews yet</h5>
+                                    <p class="empty-state-text">Be the first to leave a review!</p>
+                                    <button class="btn btn-primary">Leave a Review</button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

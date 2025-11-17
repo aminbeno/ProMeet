@@ -1,0 +1,384 @@
+@model IEnumerable<Appointment>
+@{
+    ViewData["Title"] = "Manage Appointments";
+}
+
+<!-- Header Section -->
+<section class="appointment-header py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/Professional/Dashboard" class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Manage Appointments</li>
+                    </ol>
+                </nav>
+                <h1 class="display-4 fw-bold mb-2 gradient-text">Manage Appointments</h1>
+                <p class="lead text-muted">Review and manage your upcoming appointments</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="/Availability/Manage" class="btn btn-outline-primary btn-lg" style="border-radius: 15px;">
+                    <i class="bi bi-clock"></i> Manage Availability
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Cards -->
+<section class="stats-section py-4">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-lg text-center" style="border-radius: 20px;">
+                    <div class="card-body p-4">
+                        <div class="stat-icon mb-3">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <h3 class="fw-bold text-primary mb-1">@Model.Count(a => a.Status == AppointmentStatus.Confirmed)</h3>
+                        <p class="text-muted mb-0">Confirmed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-lg text-center" style="border-radius: 20px;">
+                    <div class="card-body p-4">
+                        <div class="stat-icon mb-3">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <h3 class="fw-bold text-warning mb-1">@Model.Count(a => a.Status == AppointmentStatus.Pending)</h3>
+                        <p class="text-muted mb-0">Pending</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-lg text-center" style="border-radius: 20px;">
+                    <div class="card-body p-4">
+                        <div class="stat-icon mb-3">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <h3 class="fw-bold text-success mb-1">@Model.Count(a => a.Status == AppointmentStatus.Completed)</h3>
+                        <p class="text-muted mb-0">Completed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-lg text-center" style="border-radius: 20px;">
+                    <div class="card-body p-4">
+                        <div class="stat-icon mb-3">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <h3 class="fw-bold text-danger mb-1">@Model.Count(a => a.Status == AppointmentStatus.Canceled)</h3>
+                        <p class="text-muted mb-0">Cancelled</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Appointments List -->
+<section class="appointments-section py-5">
+    <div class="container">
+        <!-- Filters -->
+        <div class="card border-0 shadow mb-4" style="border-radius: 20px;">
+            <div class="card-body p-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Filter by Status</label>
+                        <select class="form-select form-select-lg" id="statusFilter" onchange="filterAppointments()">
+                            <option value="">All Appointments</option>
+                            <option value="@AppointmentStatus.Pending">Pending</option>
+                            <option value="@AppointmentStatus.Confirmed">Confirmed</option>
+                            <option value="@AppointmentStatus.Completed">Completed</option>
+                            <option value="@AppointmentStatus.Canceled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Filter by Date</label>
+                        <input type="date" class="form-control form-control-lg" id="dateFilter" onchange="filterAppointments()">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-secondary btn-lg w-100" onclick="resetFilters()">
+                            <i class="bi bi-arrow-clockwise"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Table -->
+        <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0 px-4 py-3">
+                                    <i class="bi bi-person me-2"></i>Client
+                                </th>
+                                <th class="border-0 px-4 py-3">
+                                    <i class="bi bi-calendar me-2"></i>Date & Time
+                                </th>
+                                <th class="border-0 px-4 py-3">
+                                    <i class="bi bi-tag me-2"></i>Service
+                                </th>
+                                <th class="border-0 px-4 py-3">
+                                    <i class="bi bi-currency-dollar me-2"></i>Price
+                                </th>
+                                <th class="border-0 px-4 py-3">
+                                    <i class="bi bi-info-circle me-2"></i>Status
+                                </th>
+                                <th class="border-0 px-4 py-3">
+                                    <i class="bi bi-gear me-2"></i>Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTable">
+                            @foreach (var appointment in Model.OrderBy(a => a.Date))
+                            {
+                                <tr class="appointment-row" data-status="@appointment.Status" data-date="@appointment.Date.ToString("yyyy-MM-dd")">
+                                    <td class="px-4 py-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="client-avatar me-3">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-0">@appointment.Client?.Name</h6>
+                                                <small class="text-muted">Client #@appointment.ClientID</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="appointment-datetime">
+                                            <div class="date">@appointment.Date.ToString("MMM dd, yyyy")</div>
+                                            <div class="time text-muted">@appointment.StartTime.ToString("hh:mm tt") - @appointment.EndTime.ToString("hh:mm tt")</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <span class="service-badge">@appointment.Professional?.Specialty</span>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <span class="price-tag">$@appointment.Professional?.Price</span>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <span class="status-badge status-@appointment.Status.ToString().ToLower()">
+                                            @appointment.Status
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="action-buttons">
+                                            <a href="/Appointment/Details/@appointment.AppointmentID" class="btn btn-outline-primary btn-sm me-1" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            @if (appointment.Status == AppointmentStatus.Pending)
+                                            {
+                                                <button type="button" class="btn btn-success btn-sm me-1" onclick="updateStatus('@appointment.AppointmentID', 'Confirmed')" title="Confirm">
+                                                    <i class="bi bi-check"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="updateStatus('@appointment.AppointmentID', 'Cancelled')" title="Cancel">
+                                                    <i class="bi bi-x"></i>
+                                                </button>
+                                            }
+                                            else if (appointment.Status == AppointmentStatus.Confirmed)
+                                            {
+                                                <button type="button" class="btn btn-info btn-sm me-1" onclick="updateStatus('@appointment.AppointmentID', 'Completed')" title="Mark Complete">
+                                                    <i class="bi bi-check-circle"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-warning btn-sm" onclick="updateStatus('@appointment.AppointmentID', 'Cancelled')" title="Cancel">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <div class="empty-state-icon mb-3">
+                            <i class="bi bi-calendar-x"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">No Appointments Found</h4>
+                        <p class="text-muted mb-4">You don't have any appointments yet.</p>
+                        <a href="/Availability/Manage" class="btn btn-gradient btn-lg">
+                            <i class="bi bi-clock"></i> Set Your Availability
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+    .appointment-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    }
+    
+    .stats-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin-top: -2rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: white;
+        margin: 0 auto;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .client-avatar {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+    
+    .service-badge {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .price-tag {
+        font-weight: 600;
+        color: #28a745;
+        font-size: 1.1rem;
+    }
+    
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .status-confirmed {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+    
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .action-buttons .btn {
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .empty-state-icon {
+        font-size: 4rem;
+        color: #dee2e6;
+    }
+    
+    .table th {
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+    }
+    
+    .appointment-datetime .date {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .appointment-datetime .time {
+        font-size: 0.9rem;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    function filterAppointments() {
+        const statusFilter = document.getElementById('statusFilter').value;
+        const dateFilter = document.getElementById('dateFilter').value;
+        const rows = document.querySelectorAll('.appointment-row');
+        
+        rows.forEach(row => {
+            const status = row.getAttribute('data-status');
+            const date = row.getAttribute('data-date');
+            
+            const statusMatch = !statusFilter || status === statusFilter;
+            const dateMatch = !dateFilter || date === dateFilter;
+            
+            if (statusMatch && dateMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    
+    function resetFilters() {
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('dateFilter').value = '';
+        filterAppointments();
+    }
+    
+    function updateStatus(appointmentId, newStatus) {
+        if (confirm(`Are you sure you want to mark this appointment as ${newStatus.toLowerCase()}?`)) {
+            // Implement status update logic
+            alert(`Appointment ${appointmentId} status updated to ${newStatus}`);
+            // In a real implementation, this would make an AJAX call to update the status
+            location.reload();
+        }
+    }
+</script>

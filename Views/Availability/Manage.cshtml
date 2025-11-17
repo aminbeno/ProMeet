@@ -1,0 +1,224 @@
+@{
+    ViewData["Title"] = "Manage Availability";
+}
+
+<div class="container my-5">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Manage Availability</h2>
+            <p class="text-muted">Define your working hours, set breaks, and block dates to keep your schedule accurate.</p>
+        </div>
+        <a href="/Professional/Dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="row g-5">
+        <!-- Left Column: Weekly Hours & Breaks -->
+        <div class="col-lg-8">
+            <form method="post" action="/Availability/Update">
+                <!-- Weekly Schedule -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-0 pt-3 d-flex justify-content-between align-items-center">
+                        <h4 class="fw-bold mb-0">Weekly Schedule</h4>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="apply-to-all-btn">Apply to All</button>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Set your default weekly availability. You can override this for specific dates below.</p>
+                        
+                        <div id="schedule-container">
+                            <!-- Schedule rows will be injected here by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Breaks -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 pt-3">
+                        <h4 class="fw-bold mb-0">Breaks</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Set up recurring breaks during your workday, like a lunch break.</p>
+                        <div id="breaks-container">
+                            <!-- Break rows will be injected here by JS -->
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm mt-2" id="add-break-btn">
+                            <i class="bi bi-plus-circle me-1"></i> Add Break
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="mt-4 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Save Schedule</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Column: Date Overrides -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h4 class="fw-bold">Date Overrides</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small">Block specific dates for vacations or add custom availability for a special day.</p>
+                    
+                    <!-- Calendar View -->
+                    <div id="calendar-container" class="mb-3">
+                        <!-- A simple calendar representation or a link to a modal calendar -->
+                        <input type="date" class="form-control" id="date-override-picker">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-danger" type="button" id="block-date-btn">
+                            <i class="bi bi-calendar-x-fill me-1"></i> Mark as Unavailable
+                        </button>
+                        <button class="btn btn-info text-white" type="button" id="set-custom-hours-btn">
+                            <i class="bi bi-pencil-fill me-1"></i> Set Custom Hours
+                        </button>
+                    </div>
+                    
+                    <hr>
+
+                    <h6 class="fw-bold">Upcoming Overrides</h6>
+                    <ul class="list-group list-group-flush" id="overrides-list">
+                        <!-- Override items will be injected here -->
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Dec 25, 2025</span>
+                            <span class="badge bg-danger-soft text-danger">Unavailable</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Jan 1, 2026</span>
+                            <span class="badge bg-danger-soft text-danger">Unavailable</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const scheduleContainer = document.getElementById('schedule-container');
+            const breaksContainer = document.getElementById('breaks-container');
+            const addBreakBtn = document.getElementById('add-break-btn');
+            const applyToAllBtn = document.getElementById('apply-to-all-btn');
+
+            const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+            // Initial data (could be loaded from model)
+            const schedule = {
+                Monday: { active: true, start: '09:00', end: '17:00' },
+                Tuesday: { active: true, start: '09:00', end: '17:00' },
+                Wednesday: { active: true, start: '09:00', end: '17:00' },
+                Thursday: { active: true, start: '09:00', end: '17:00' },
+                Friday: { active: true, start: '09:00', end: '13:00' },
+                Saturday: { active: false, start: '', end: '' },
+                Sunday: { active: false, start: '', end: '' },
+            };
+
+            const breaks = [
+                { start: '12:00', end: '13:00' }
+            ];
+
+            function renderSchedule() {
+                scheduleContainer.innerHTML = '';
+                daysOfWeek.forEach(day => {
+                    const dayData = schedule[day];
+                    const isChecked = dayData.active ? 'checked' : '';
+                    const isDisabled = !dayData.active ? 'disabled' : '';
+
+                    const row = `
+                        <div class="row g-2 align-items-center mb-2 schedule-day-row">
+                            <div class="col-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="${day}-switch" data-day="${day}" ${isChecked}>
+                                    <label class="form-check-label fw-bold" for="${day}-switch">${day}</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <input type="time" class="form-control form-control-sm start-time" data-day="${day}" value="${dayData.start}" ${isDisabled}>
+                            </div>
+                            <div class="col-4">
+                                <input type="time" class="form-control form-control-sm end-time" data-day="${day}" value="${dayData.end}" ${isDisabled}>
+                            </div>
+                        </div>
+                    `;
+                    scheduleContainer.insertAdjacentHTML('beforeend', row);
+                });
+            }
+
+            function renderBreaks() {
+                breaksContainer.innerHTML = '';
+                breaks.forEach((breakItem, index) => {
+                    const row = `
+                        <div class="row g-2 align-items-center mb-2 break-row">
+                            <div class="col-5">
+                                <input type="time" class="form-control form-control-sm" value="${breakItem.start}">
+                            </div>
+                            <div class="col-5">
+                                <input type="time" class="form-control form-control-sm" value="${breakItem.end}">
+                            </div>
+                            <div class="col-2 text-end">
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-break-btn" data-index="${index}"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    breaksContainer.insertAdjacentHTML('beforeend', row);
+                });
+            }
+
+            // Event Listeners
+            scheduleContainer.addEventListener('change', function(e) {
+                if (e.target.classList.contains('form-check-input')) {
+                    const day = e.target.dataset.day;
+                    const row = e.target.closest('.schedule-day-row');
+                    const timeInputs = row.querySelectorAll('input[type="time"]');
+                    if (e.target.checked) {
+                        timeInputs.forEach(input => input.disabled = false);
+                        schedule[day].active = true;
+                    } else {
+                        timeInputs.forEach(input => {
+                            input.disabled = true;
+                            input.value = '';
+                        });
+                        schedule[day].active = false;
+                    }
+                }
+            });
+
+            addBreakBtn.addEventListener('click', function() {
+                breaks.push({ start: '', end: '' });
+                renderBreaks();
+            });
+
+            breaksContainer.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-break-btn')) {
+                    const index = e.target.closest('.remove-break-btn').dataset.index;
+                    breaks.splice(index, 1);
+                    renderBreaks();
+                }
+            });
+            
+            applyToAllBtn.addEventListener('click', function() {
+                const firstDay = schedule['Monday'];
+                if (!firstDay.active) return;
+
+                daysOfWeek.forEach(day => {
+                    if (day !== 'Monday') {
+                        schedule[day].active = true;
+                        schedule[day].start = firstDay.start;
+                        schedule[day].end = firstDay.end;
+                    }
+                });
+                renderSchedule();
+            });
+
+            // Initial Render
+            renderSchedule();
+            renderBreaks();
+        });
+    </script>
+}

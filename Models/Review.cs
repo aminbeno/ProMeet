@@ -1,51 +1,49 @@
-﻿using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProMeet.Models
 {
-    /// <summary>
-    /// Représente un avis laissé par un client après un rendez-vous.
-    /// </summary>
     public class Review
     {
-        /// <summary>
-        /// Identifiant de l'avis.
-        /// </summary>
-        [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+        [BsonElement("reviewId")]
         public int ReviewID { get; set; }
-
-        /// <summary>
-        /// Identifiant du rendez-vous associé.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("appointmentId")]
         public int AppointmentID { get; set; }
-
-        /// <summary>
-        /// Note attribuée (1 à 5).
-        /// </summary>
-        [Required]
-        [Range(1, 5)]
+        
+        [BsonElement("clientId")]
+        public int ClientID { get; set; }
+        
+        [BsonElement("professionalId")]
+        public int ProfessionalID { get; set; }
+        
+        [BsonElement("rating")]
         public int Rating { get; set; }
-
-        /// <summary>
-        /// Commentaire du client.
-        /// </summary>
-        [StringLength(500)]
-        public string Comment { get; set; }
-
-        /// <summary>
-        /// Date de soumission de l'avis.
-        /// </summary>
-        [Required]
-        public DateTime DateProvided { get; set; }
-
-        /// <summary>
-        /// Informations sur le rendez-vous associé.
-        /// </summary>
-        public Appointment Appointment { get; set; }
-
-        /// <summary>
-        /// Informations sur le professionnel concerné.
-        /// </summary>
-        public Professional Professional { get; set; }
+        
+        [BsonElement("comment")]
+        public string? Comment { get; set; }
+        
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("updatedAt")]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("dateProvided")]
+        public DateTime DateProvided { get; set; } = DateTime.UtcNow;
+        
+        // Nested documents for related data
+        [BsonElement("appointment")]
+        public Appointment? Appointment { get; set; }
+        
+        [BsonElement("client")]
+        public User? Client { get; set; }
+        
+        [BsonElement("professional")]
+        public Professional? Professional { get; set; }
     }
 }

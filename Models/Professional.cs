@@ -1,120 +1,74 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewEngines;
-using System;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProMeet.Models
 {
-    /// <summary>
-    /// Représente un professionnel inscrit sur la plateforme.
-    /// </summary>
     public class Professional
     {
-        /// <summary>
-        /// Identifiant du professionnel.
-        /// </summary>
-        [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+        [BsonElement("professionalId")]
         public int ProfessionalID { get; set; }
-
-        /// <summary>
-        /// Identifiant de l'utilisateur associé.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("userId")]
         public int UserID { get; set; }
-
-        /// <summary>
-        /// Intitulé du poste ou métier.
-        /// </summary>
-        [Required]
-        [StringLength(50)]
-        public string JobTitle { get; set; }
-
-        /// <summary>
-        /// Spécialité du professionnel.
-        /// </summary>
-        [Required]
-        [StringLength(100)]
-        public string Specialty { get; set; }
-
-        /// <summary>
-        /// Biographie du professionnel.
-        /// </summary>
-        [StringLength(500)]
-        public string Bio { get; set; }
-
-        /// <summary>
-        /// Expérience professionnelle.
-        /// </summary>
-        [StringLength(200)]
-        public string Experience { get; set; }
-
-        /// <summary>
-        /// Diplômes obtenus.
-        /// </summary>
-        [StringLength(200)]
-        public string Degrees { get; set; }
-
-        /// <summary>
-        /// Type de consultation ("online" ou "in-person").
-        /// </summary>
-        [Required]
-        [StringLength(20)]
-        public string ConsultationType { get; set; }
-
-        /// <summary>
-        /// Prix de la consultation.
-        /// </summary>
-        [Range(0, 10000)]
-        public decimal Price { get; set; }
-
-        /// <summary>
-        /// Indique si le profil est validé par l'administration.
-        /// </summary>
-        public bool IsValidated { get; set; }
-
-        /// <summary>
-        /// Note moyenne du professionnel.
-        /// </summary>
-        [Range(0, 5)]
-        public float Rating { get; set; }
-
-        /// <summary>
-        /// Indique si le profil est actif.
-        /// </summary>
-        public bool ProfileActive { get; set; }
-
-        /// <summary>
-        /// Informations sur l'utilisateur associé.
-        /// </summary>
-        public User User { get; set; }
-
-        /// <summary>
-        /// Identifiant de la catégorie professionnelle.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("categoryId")]
         public int CategoryID { get; set; }
-
-        /// <summary>
-        /// Catégorie professionnelle associée.
-        /// </summary>
-        public Category Category { get; set; }
-
-        /// <summary>
-        /// Disponibilités du professionnel.
-        /// </summary>
-        public ICollection<Availability> Availabilities { get; set; }
-
-        /// <summary>
-        /// Rendez-vous du professionnel.
-        /// </summary>
-        public ICollection<Appointment> Appointments { get; set; }
-
-        /// <summary>
-        /// Avis reçus par le professionnel.
-        /// </summary>
-        public ICollection<Review> Reviews { get; set; }
-
-        /// <summary>
-        /// Conversations du professionnel.
-        /// </summary>
-        public ICollection<Chat> Chats { get; set; }
+        
+        [BsonElement("jobTitle")]
+        public string JobTitle { get; set; } = "";
+        
+        [BsonElement("specialty")]
+        public string Specialty { get; set; } = "";
+        
+        [BsonElement("bio")]
+        public string Bio { get; set; } = "";
+        
+        [BsonElement("experience")]
+        public string Experience { get; set; } = "";
+        
+        [BsonElement("degrees")]
+        public string Degrees { get; set; } = "";
+        
+        [BsonElement("consultationType")]
+        public string ConsultationType { get; set; } = "";
+        
+        [BsonElement("price")]
+        public decimal Price { get; set; }
+        
+        [BsonElement("isValidated")]
+        public bool IsValidated { get; set; }
+        
+        [BsonElement("rating")]
+        public float Rating { get; set; }
+        
+        [BsonElement("profileActive")]
+        public bool ProfileActive { get; set; }
+        
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("updatedAt")]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        // Nested documents instead of navigation properties
+        [BsonElement("user")]
+        public User? User { get; set; }
+        
+        [BsonElement("category")]
+        public Category? Category { get; set; }
+        
+        // Navigation properties (not stored in MongoDB, for application use)
+        [BsonIgnore]
+        public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+        
+        [BsonIgnore]
+        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+        
+        [BsonIgnore]
+        public virtual ICollection<Availability> Availabilities { get; set; } = new List<Availability>();
     }
 }

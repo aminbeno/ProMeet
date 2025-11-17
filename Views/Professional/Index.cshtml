@@ -1,0 +1,431 @@
+@model IEnumerable<ProMeet.Models.Professional>
+
+@{
+    ViewData["Title"] = "Find Your Expert";
+}
+
+<!-- Modern Hero Section -->
+<section class="professional-hero full-width-section">
+    <div class="hero-overlay"></div>
+    <div class="container-fluid-custom">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="hero-content animate-fade-in-up">
+                    <h1 class="display-3 fw-black mb-4 text-white">Find Your Perfect Expert</h1>
+                    <p class="lead mb-5 text-white-75">Connect with trusted professionals across various fields. Book appointments instantly and get the help you need.</p>
+                    <div class="hero-stats">
+                        <div class="row g-4">
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h3 class="fw-bold text-white">500+</h3>
+                                    <p class="text-white-75 mb-0">Professionals</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h3 class="fw-bold text-white">50+</h3>
+                                    <p class="text-white-75 mb-0">Categories</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h3 class="fw-bold text-white">4.9</h3>
+                                    <p class="text-white-75 mb-0">Avg Rating</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Advanced Search Section -->
+<section class="search-section py-5 section-spacing">
+    <div class="container-fluid-custom">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="search-card shadow-xl">
+                    <div class="card-body p-4">
+                        <form class="advanced-search-form">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-lg-4">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control form-control-lg" placeholder="Search professionals..." id="searchInput">
+                                        <label for="searchInput">
+                                            <i class="bi bi-search me-2"></i>Search by name, specialty, or keyword
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-floating">
+                                        <select class="form-select form-select-lg" id="categorySelect">
+                                            <option selected>All Categories</option>
+                                            <option value="healthcare">Healthcare</option>
+                                            <option value="legal">Legal</option>
+                                            <option value="coaching">Coaching</option>
+                                            <option value="finance">Finance</option>
+                                            <option value="technology">Technology</option>
+                                            <option value="education">Education</option>
+                                        </select>
+                                        <label for="categorySelect">
+                                            <i class="bi bi-tags me-2"></i>Category
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control form-control-lg" placeholder="Location" id="locationInput">
+                                        <label for="locationInput">
+                                            <i class="bi bi-geo-alt me-2"></i>Location
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <button type="submit" class="btn btn-gradient btn-lg w-100">
+                                        <i class="bi bi-search me-2"></i>Find
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Advanced Filters -->
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-filter="rating">
+                                            <i class="bi bi-star me-1"></i>4.5+ Rating
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-filter="available">
+                                            <i class="bi bi-clock me-1"></i>Available Today
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-filter="price">
+                                            <i class="bi bi-currency-dollar me-1"></i>Under $100
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-filter="verified">
+                                            <i class="bi bi-patch-check me-1"></i>Verified
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Professionals Grid -->
+<section class="professionals-section section-spacing">
+    <div class="container-fluid-custom">
+        <!-- Results Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Available Professionals</h2>
+                <p class="text-muted mb-0">@Model.Count() experts ready to help you</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="sortBtn">
+                    <i class="bi bi-arrow-down-up me-1"></i>Sort by
+                </button>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary btn-sm active" id="gridView">
+                        <i class="bi bi-grid"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="listView">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professionals Grid -->
+        <div class="row g-4" id="professionalsGrid">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var professional in Model)
+                {
+                    <div class="col-md-6 col-lg-4 col-xl-3 professional-item">
+                        <div class="card professional-card-modern h-100">
+                            <div class="card-image-wrapper">
+                                <img src="@professional.User.PhotoURL" class="card-img-top" alt="@professional.User.Name">
+                                <div class="card-overlay">
+                                    <div class="overlay-content">
+                                        <button class="btn btn-light btn-sm mb-2">
+                                            <i class="bi bi-heart"></i> Save
+                                        </button>
+                                        <a href="/professional/@professional.ProfessionalID" class="btn btn-primary btn-sm">
+                                            View Profile
+                                        </a>
+                                    </div>
+                                </div>
+                                @if (professional.Rating >= 4.5)
+                                {
+                                    <div class="verified-badge">
+                                        <i class="bi bi-patch-check-fill text-primary"></i>
+                                    </div>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title fw-bold mb-0 text-truncate-single">@professional.User.Name</h5>
+                                    <div class="rating-badge">
+                                        <i class="bi bi-star-fill text-warning me-1"></i>
+                                        <span class="fw-semibold">@professional.Rating.ToString("0.0")</span>
+                                    </div>
+                                </div>
+                                <p class="card-subtitle text-primary fw-semibold mb-2">@professional.JobTitle</p>
+                                <p class="card-text text-muted small mb-3 text-truncate-multiline">@professional.Bio.Substring(0, Math.Min(professional.Bio.Length, 120))...</p>
+                                
+                                <div class="professional-stats mb-3">
+                                    <div class="d-flex justify-content-between text-center">
+                                        <div>
+                                            <i class="bi bi-calendar-check text-success"></i>
+                                            <span class="small text-muted">Available</span>
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-geo-alt text-info"></i>
+                                            <span class="small text-muted">@(professional.User.City ?? "Online")</span>
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-currency-dollar text-warning"></i>
+                                            <span class="small text-muted">$@professional.Price</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <a href="/book/@professional.ProfessionalID" class="btn btn-gradient btn-sm">
+                                        <i class="bi bi-calendar-plus me-1"></i>Book Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-search display-1 text-muted"></i>
+                        </div>
+                        <h3 class="fw-bold mb-3">No Professionals Found</h3>
+                        <p class="text-muted mb-4">We couldn't find any professionals matching your criteria. Try adjusting your search filters.</p>
+                        <button type="button" class="btn btn-primary">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Reset Filters
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+    .professional-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 6rem 0 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-stats {
+        margin-top: 3rem;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .search-section {
+        margin-top: -2rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .search-card {
+        background: white;
+        border-radius: 20px;
+        border: none;
+    }
+
+    .advanced-search-form .form-control,
+    .advanced-search-form .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .advanced-search-form .form-control:focus,
+    .advanced-search-form .form-select:focus {
+        border-color: var(--primary-purple);
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .professionals-section {
+        padding: 4rem 0;
+    }
+
+    .professional-card-modern {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: none;
+        height: 100%;
+    }
+
+    .professional-card-modern:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .card-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 200px;
+    }
+
+    .card-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .professional-card-modern:hover .card-image-wrapper img {
+        transform: scale(1.1);
+    }
+
+    .card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .professional-card-modern:hover .card-overlay {
+        opacity: 1;
+    }
+
+    .overlay-content {
+        text-align: center;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+
+    .professional-card-modern:hover .overlay-content {
+        transform: translateY(0);
+    }
+
+    .verified-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .rating-badge {
+        background: #fff3cd;
+        color: #856404;
+        padding: 0.25rem 0.5rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .professional-stats {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 0.75rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state-icon {
+        margin-bottom: 2rem;
+    }
+
+    @@media (max-width: 768px) {
+        .professional-hero {
+            padding: 4rem 0 2rem;
+        }
+        
+        .hero-content h1 {
+            font-size: 2rem;
+        }
+        
+        .search-card {
+            margin: 0 1rem;
+        }
+        
+        .advanced-search-form .row > div {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+
+<script>
+    // Filter functionality
+    document.querySelectorAll('[data-filter]').forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.toggle('active');
+            // Add filter logic here
+        });
+    });
+
+    // Sort functionality
+    document.getElementById('sortBtn').addEventListener('click', function() {
+        // Add sort logic here
+    });
+
+    // View toggle functionality
+    document.getElementById('gridView').addEventListener('click', function() {
+        document.getElementById('listView').classList.remove('active');
+        this.classList.add('active');
+        document.getElementById('professionalsGrid').classList.remove('list-view');
+    });
+
+    document.getElementById('listView').addEventListener('click', function() {
+        document.getElementById('gridView').classList.remove('active');
+        this.classList.add('active');
+        document.getElementById('professionalsGrid').classList.add('list-view');
+    });
+</script>

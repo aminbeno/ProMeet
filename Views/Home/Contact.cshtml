@@ -1,0 +1,369 @@
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<!-- Hero Section -->
+<section class="contact-hero py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4 gradient-text">Get in Touch</h1>
+                <p class="lead text-muted mb-4">
+                    Have questions about ProMeet? We'd love to hear from you. 
+                    Our team is here to help you with any inquiries.
+                </p>
+                <div class="contact-info">
+                    <div class="contact-item d-flex mb-4">
+                        <div class="contact-icon me-3">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Office Address</h6>
+                            <p class="text-muted mb-0">123 ProMeet Street, Suite 100<br>San Francisco, CA 94105</p>
+                        </div>
+                    </div>
+                    <div class="contact-item d-flex mb-4">
+                        <div class="contact-icon me-3">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Phone Number</h6>
+                            <p class="text-muted mb-0">+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="contact-item d-flex mb-4">
+                        <div class="contact-icon me-3">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Email Address</h6>
+                            <p class="text-muted mb-0">support@promeet.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="social-links mt-4">
+                    <a href="#" class="btn btn-outline-primary btn-sm me-2">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-info btn-sm me-2">
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-primary btn-sm me-2">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="contact-form-card card border-0 shadow-lg" style="border-radius: 25px;">
+                    <div class="card-body p-5">
+                        <h4 class="fw-bold mb-4">Send us a Message</h4>
+                        <form id="contactForm" method="post">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="firstName" class="form-label fw-semibold">First Name</label>
+                                    <input type="text" class="form-control form-control-lg" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label fw-semibold">Last Name</label>
+                                    <input type="text" class="form-control form-control-lg" id="lastName" name="lastName" required>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label fw-semibold">Email Address</label>
+                                    <input type="email" class="form-control form-control-lg" id="email" name="email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                                    <input type="tel" class="form-control form-control-lg" id="phone" name="phone">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="subject" class="form-label fw-semibold">Subject</label>
+                                <select class="form-select form-select-lg" id="subject" name="subject" required>
+                                    <option value="">Select a topic</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="support">Technical Support</option>
+                                    <option value="business">Business Partnership</option>
+                                    <option value="feedback">Feedback</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="message" class="form-label fw-semibold">Your Message</label>
+                                <textarea class="form-control form-control-lg" id="message" name="message" rows="5" required></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter">
+                                    <label class="form-check-label" for="newsletter">
+                                        I would like to receive updates and news from ProMeet
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-gradient btn-lg w-100">
+                                <i class="bi bi-send-fill me-2"></i>
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="section-title fw-bold mb-4">Frequently Asked Questions</h2>
+                <p class="lead text-muted mb-5">
+                    Find answers to common questions about ProMeet
+                </p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item mb-3" style="border-radius: 15px; overflow: hidden;">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How do I book an appointment?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Simply browse our professionals, select a service, choose your preferred date and time, and confirm your booking. You'll receive a confirmation email with all the details.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item mb-3" style="border-radius: 15px; overflow: hidden;">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Is ProMeet free to use?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                ProMeet is free for clients to use. Professionals pay a small fee to list their services and manage appointments through our platform.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item mb-3" style="border-radius: 15px; overflow: hidden;">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                How do I cancel or reschedule an appointment?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                You can cancel or reschedule your appointment through your dashboard. Simply go to your appointments, select the one you want to modify, and choose your new preferred time.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item mb-3" style="border-radius: 15px; overflow: hidden;">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-semibold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                Are the professionals verified?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, all professionals on ProMeet go through a verification process to ensure they are qualified and trustworthy. We also have a review system to help you make informed decisions.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="section-title fw-bold mb-4">Find Us</h2>
+                <p class="lead text-muted mb-5">
+                    Visit our office or get in touch with our team
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="map-container card border-0 shadow" style="border-radius: 25px; overflow: hidden;">
+                    <div class="map-placeholder" style="height: 400px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
+                        <div class="text-center text-white">
+                            <i class="bi bi-geo-alt-fill mb-3" style="font-size: 4rem;"></i>
+                            <h4 class="fw-bold">ProMeet Headquarters</h4>
+                            <p class="mb-0">123 ProMeet Street, San Francisco, CA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    
+    .contact-form-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    }
+    
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .accordion-button {
+        background: linear-gradient(135deg, #f8f9fa, #ffffff);
+        border: none;
+        border-radius: 15px;
+        margin-bottom: 0;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+    }
+    
+    .accordion-body {
+        background: white;
+        border-radius: 0 0 15px 15px;
+    }
+    
+    .btn {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-gradient {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-gradient:hover {
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .social-links .btn {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.1rem;
+    }
+    
+    .social-links .btn:hover {
+        transform: translateY(-3px);
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        color: #495057;
+    }
+    
+    .map-container {
+        transition: all 0.3s ease;
+    }
+    
+    .map-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+    
+    .contact-form-card {
+        transition: all 0.3s ease;
+    }
+    
+    .contact-form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get form data
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        
+        // Simulate form submission
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        
+        submitButton.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Sending...';
+        submitButton.disabled = true;
+        
+        setTimeout(() => {
+            submitButton.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Message Sent!';
+            submitButton.classList.remove('btn-gradient');
+            submitButton.classList.add('btn-success');
+            
+            setTimeout(() => {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+                submitButton.classList.remove('btn-success');
+                submitButton.classList.add('btn-gradient');
+                this.reset();
+            }, 2000);
+        }, 2000);
+    });
+</script>

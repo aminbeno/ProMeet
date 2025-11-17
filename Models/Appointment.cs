@@ -1,82 +1,63 @@
-﻿using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProMeet.Models
 {
-    /// <summary>
-    /// Représente un rendez-vous entre un client et un professionnel.
-    /// </summary>
     public class Appointment
     {
-        /// <summary>
-        /// Identifiant du rendez-vous.
-        /// </summary>
-        [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+        [BsonElement("appointmentId")]
         public int AppointmentID { get; set; }
-
-        /// <summary>
-        /// Identifiant du client.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("clientId")]
         public int ClientID { get; set; }
-
-        /// <summary>
-        /// Identifiant du professionnel.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("professionalId")]
         public int ProfessionalID { get; set; }
-
-        /// <summary>
-        /// Date du rendez-vous.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("date")]
         public DateTime Date { get; set; }
-
-        /// <summary>
-        /// Heure de début du rendez-vous.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("startTime")]
         public TimeSpan StartTime { get; set; }
-
-        /// <summary>
-        /// Heure de fin du rendez-vous.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("endTime")]
         public TimeSpan EndTime { get; set; }
-
-        /// <summary>
-        /// Statut du rendez-vous.
-        /// </summary>
-        [Required]
-        public AppointmentStatus Status { get; set; }
-
-        /// <summary>
-        /// Indique si le client a été notifié.
-        /// </summary>
+        
+        [BsonElement("status")]
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
+        
+        [BsonElement("reasonForVisit")]
+        public string? ReasonForVisit { get; set; }
+        
+        [BsonElement("notified")]
         public bool Notified { get; set; }
-
-        /// <summary>
-        /// Informations sur le client.
-        /// </summary>
-        public User Client { get; set; }
-
-        /// <summary>
-        /// Informations sur le professionnel.
-        /// </summary>
-        public Professional Professional { get; set; }
-
-        /// <summary>
-        /// Avis associé au rendez-vous.
-        /// </summary>
-        public Review Review { get; set; }
+        
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("updatedAt")]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        // Nested documents for related data
+        [BsonElement("client")]
+        public User? Client { get; set; }
+        
+        [BsonElement("professional")]
+        public Professional? Professional { get; set; }
+        
+        [BsonElement("review")]
+        public Review? Review { get; set; }
     }
-
-    /// <summary>
-    /// Enumération des statuts possibles pour un rendez-vous.
-    /// </summary>
+    
     public enum AppointmentStatus
     {
         Pending,
         Confirmed,
+        Completed,
         Canceled
     }
 }

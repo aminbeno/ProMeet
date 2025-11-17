@@ -1,0 +1,170 @@
+@model ProMeet.Models.Professional
+
+@{
+    ViewData["Title"] = "Manage Profile";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-body text-center">
+                    <img src="@Model.User.PhotoURL" class="rounded-circle mb-3" alt="@Model.User.Name" style="width: 120px; height: 120px; object-fit: cover;">
+                    <h5 class="fw-bold">@Model.User.Name</h5>
+                    <p class="text-primary">@Model.JobTitle</p>
+                    <hr>
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <a class="nav-link active text-start" id="v-pills-basic-tab" data-bs-toggle="pill" href="#v-pills-basic" role="tab" aria-controls="v-pills-basic" aria-selected="true">
+                            <i class="bi bi-person-circle me-2"></i> Basic Information
+                        </a>
+                        <a class="nav-link text-start" id="v-pills-details-tab" data-bs-toggle="pill" href="#v-pills-details" role="tab" aria-controls="v-pills-details" aria-selected="false">
+                            <i class="bi bi-briefcase-fill me-2"></i> Professional Details
+                        </a>
+                        <a class="nav-link text-start" id="v-pills-bio-tab" data-bs-toggle="pill" href="#v-pills-bio" role="tab" aria-controls="v-pills-bio" aria-selected="false">
+                            <i class="bi bi-journal-text me-2"></i> Biography & Experience
+                        </a>
+                        <a class="nav-link text-start" id="v-pills-visibility-tab" data-bs-toggle="pill" href="#v-pills-visibility" role="tab" aria-controls="v-pills-visibility" aria-selected="false">
+                            <i class="bi bi-eye-fill me-2"></i> Profile Visibility
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="col-lg-9">
+            <form method="post" action="/Professional/UpdateProfile" enctype="multipart/form-data">
+                <input type="hidden" name="professionalId" value="@Model.ProfessionalID" />
+                
+                <div class="tab-content" id="v-pills-tabContent">
+                    <!-- Basic Information -->
+                    <div class="tab-pane fade show active" id="v-pills-basic" role="tabpanel" aria-labelledby="v-pills-basic-tab">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 pt-3">
+                                <h4 class="fw-bold">Basic Information</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Full Name</label>
+                                        <input type="text" name="name" class="form-control" value="@Model.User.Name" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Email</label>
+                                        <input type="email" name="email" class="form-control" value="@Model.User.Email" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">City</label>
+                                        <input type="text" name="city" class="form-control" value="@Model.User.City" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Country</label>
+                                        <input type="text" name="country" class="form-control" value="@Model.User.Country" required />
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Profile Photo</label>
+                                        <input type="file" name="photo" class="form-control" accept="image/*" />
+                                        <small class="text-muted">Upload a new photo to replace the current one.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Details -->
+                    <div class="tab-pane fade" id="v-pills-details" role="tabpanel" aria-labelledby="v-pills-details-tab">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 pt-3">
+                                <h4 class="fw-bold">Professional Details</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Job Title</label>
+                                        <input type="text" name="jobTitle" class="form-control" value="@Model.JobTitle" placeholder="e.g., Cardiologist" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Specialty</label>
+                                        <input type="text" name="specialty" class="form-control" value="@Model.Specialty" placeholder="e.g., Heart Surgery" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Category</label>
+                                        <select name="categoryId" class="form-select" required>
+                                            <option value="1" selected>Doctor</option>
+                                            <option value="2">Lawyer</option>
+                                            <option value="3">Coach</option>
+                                            <option value="4">Therapist</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Consultation Price (DH)</label>
+                                        <input type="number" name="price" class="form-control" value="@Model.Price" min="0" required />
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Consultation Type</label>
+                                        <select name="consultationType" class="form-select" required>
+                                            <option value="In-Person" selected>In-Person</option>
+                                            <option value="Online">Online</option>
+                                            <option value="Both">Both</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Biography & Experience -->
+                    <div class="tab-pane fade" id="v-pills-bio" role="tabpanel" aria-labelledby="v-pills-bio-tab">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 pt-3">
+                                <h4 class="fw-bold">Biography & Experience</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Biography</label>
+                                    <textarea name="bio" class="form-control" rows="5" required>@Model.Bio</textarea>
+                                    <small class="text-muted">A brief introduction about yourself, your approach, and what clients can expect.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Experience</label>
+                                    <textarea name="experience" class="form-control" rows="3" placeholder="e.g., 15+ years in cardiology">@Model.Experience</textarea>
+                                    <small class="text-muted">Detail your professional journey and key milestones.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Degrees & Certifications</label>
+                                    <textarea name="degrees" class="form-control" rows="3" placeholder="e.g., MD from Harvard Medical School">@Model.Degrees</textarea>
+                                    <small class="text-muted">List your academic qualifications and certifications.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Visibility -->
+                    <div class="tab-pane fade" id="v-pills-visibility" role="tabpanel" aria-labelledby="v-pills-visibility-tab">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 pt-3">
+                                <h4 class="fw-bold">Profile Visibility</h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Control whether your profile is visible to potential clients in search results.</p>
+                                <div class="form-check form-switch fs-5">
+                                    <input class="form-check-input" type="checkbox" name="profileActive" id="profileActive" checked="@Model.ProfileActive">
+                                    <label class="form-check-label" for="profileActive">
+                                        Make my profile visible to clients
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                    <a href="/Professional/Dashboard" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save All Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

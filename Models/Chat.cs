@@ -1,49 +1,48 @@
-﻿using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProMeet.Models
 {
-    /// <summary>
-    /// Représente une conversation entre un client et un professionnel.
-    /// </summary>
     public class Chat
     {
-        /// <summary>
-        /// Identifiant de la conversation.
-        /// </summary>
-        [Key]
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
+        
+        [BsonElement("chatId")]
         public int ChatID { get; set; }
-
-        /// <summary>
-        /// Identifiant du client.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("clientId")]
         public int ClientID { get; set; }
-
-        /// <summary>
-        /// Identifiant du professionnel.
-        /// </summary>
-        [Required]
+        
+        [BsonElement("professionalId")]
         public int ProfessionalID { get; set; }
-
-        /// <summary>
-        /// Date de début de la conversation.
-        /// </summary>
-        [Required]
-        public DateTime DateStarted { get; set; }
-
-        /// <summary>
-        /// Informations sur le client.
-        /// </summary>
-        public User Client { get; set; }
-
-        /// <summary>
-        /// Informations sur le professionnel.
-        /// </summary>
-        public Professional Professional { get; set; }
-
-        /// <summary>
-        /// Liste des messages échangés dans la conversation.
-        /// </summary>
-        public ICollection<Message> Messages { get; set; }
+        
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("updatedAt")]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("isActive")]
+        public bool IsActive { get; set; } = true;
+        
+        // Backward compatibility properties
+        [BsonIgnore]
+        public DateTime DateStarted { get => CreatedAt; set => CreatedAt = value; }
+        
+        [BsonIgnore]
+        public DateTime? LastMessageAt { get; set; }
+        
+        // Nested documents for related data
+        [BsonElement("client")]
+        public User? Client { get; set; }
+        
+        [BsonElement("professional")]
+        public Professional? Professional { get; set; }
+        
+        // Embedded messages collection
+        [BsonElement("messages")]
+        public List<Message> Messages { get; set; } = new List<Message>();
     }
 }

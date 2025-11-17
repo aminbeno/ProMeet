@@ -1,0 +1,395 @@
+@model IEnumerable<Review>
+@{
+    ViewData["Title"] = "Reviews";
+}
+
+<!-- Header Section -->
+<section class="reviews-header py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Reviews</li>
+                    </ol>
+                </nav>
+                <h1 class="display-4 fw-bold mb-2 gradient-text">Customer Reviews</h1>
+                <p class="lead text-muted">See what our clients are saying about our professionals</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="/Professional/List" class="btn btn-gradient btn-lg" style="border-radius: 15px;">
+                    <i class="bi bi-search"></i> Find Professionals
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Overview -->
+<section class="reviews-overview py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-lg text-center" style="border-radius: 25px;">
+                    <div class="card-body p-5">
+                        <div class="rating-overview mb-4">
+                            <div class="average-rating">
+                                <span class="rating-number">4.8</span>
+                                <span class="rating-out-of">/5</span>
+                            </div>
+                            <div class="stars mb-2">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-half text-warning"></i>
+                            </div>
+                            <p class="text-muted mb-0">Based on @Model.Count() reviews</p>
+                        </div>
+                        
+                        <div class="rating-breakdown">
+                            <div class="rating-bar">
+                                <span class="rating-label">5★</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" style="width: 75%"></div>
+                                </div>
+                                <span class="rating-count">75%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="rating-label">4★</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-info" style="width: 15%"></div>
+                                </div>
+                                <span class="rating-count">15%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="rating-label">3★</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" style="width: 8%"></div>
+                                </div>
+                                <span class="rating-count">8%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="rating-label">2★</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-orange" style="width: 2%"></div>
+                                </div>
+                                <span class="rating-count">2%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="rating-label">1★</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" style="width: 0%"></div>
+                                </div>
+                                <span class="rating-count">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <!-- Filter Options -->
+                <div class="card border-0 shadow mb-4" style="border-radius: 25px;">
+                    <div class="card-body p-4">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Filter by Rating</label>
+                                <select class="form-select form-select-lg" id="ratingFilter" onchange="filterReviews()">
+                                    <option value="">All Ratings</option>
+                                    <option value="5">5 Stars</option>
+                                    <option value="4">4 Stars</option>
+                                    <option value="3">3 Stars</option>
+                                    <option value="2">2 Stars</option>
+                                    <option value="1">1 Star</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Filter by Category</label>
+                                <select class="form-select form-select-lg" id="categoryFilter" onchange="filterReviews()">
+                                    <option value="">All Categories</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Legal">Legal</option>
+                                    <option value="Coaching">Coaching</option>
+                                    <option value="Finance">Finance</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-secondary btn-lg w-100" onclick="resetFilters()">
+                                    <i class="bi bi-arrow-clockwise"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reviews List -->
+                <div class="reviews-container">
+                    @foreach (var review in Model.OrderByDescending(r => r.CreatedAt))
+                    {
+                        <div class="review-card card border-0 shadow mb-4" style="border-radius: 25px;" data-rating="@review.Rating" data-category="@review.Professional?.Specialty">
+                            <div class="card-body p-5">
+                                <div class="review-header d-flex justify-content-between align-items-start mb-4">
+                                    <div class="reviewer-info">
+                                        <div class="reviewer-avatar mb-2">
+                                            <i class="bi bi-person-circle"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">Client #@review.ClientID</h6>
+                                        <p class="text-muted mb-0 small">@review.CreatedAt.ToString("MMM dd, yyyy")</p>
+                                    </div>
+                                    <div class="review-rating text-end">
+                                        <div class="stars mb-2">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= review.Rating)
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-muted"></i>
+                                                }
+                                            }
+                                        </div>
+                                        <span class="rating-text">@review.Rating/5</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="review-content mb-4">
+                                    <h5 class="fw-bold mb-3">Review for @review.Professional?.Specialty</h5>
+                                    <p class="review-text mb-0">@review.Comment</p>
+                                </div>
+                                
+                                <div class="review-footer d-flex justify-content-between align-items-center">
+                                    <div class="professional-info">
+                                        <span class="service-category">@review.Professional?.Specialty</span>
+                                        <span class="professional-name">by Professional #@review.ProfessionalID</span>
+                                    </div>
+                                    <div class="review-actions">
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="likeReview('@review.Id')">
+                                            <i class="bi bi-hand-thumbs-up me-1"></i>
+                                            Like
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="reportReview('@review.Id')">
+                                            <i class="bi bi-flag me-1"></i>
+                                            Report
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <div class="empty-state-icon mb-3">
+                                <i class="bi bi-chat-square-text"></i>
+                            </div>
+                            <h4 class="fw-bold mb-2">No Reviews Yet</h4>
+                            <p class="text-muted mb-4">Be the first to leave a review for our professionals!</p>
+                            <a href="/Professional/List" class="btn btn-gradient btn-lg">
+                                <i class="bi bi-search"></i> Find a Professional
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Write a Review Section -->
+<section class="write-review py-5 bg-light">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h3 class="fw-bold mb-3 gradient-text">Share Your Experience</h3>
+                <p class="lead text-muted mb-4">Help others by sharing your experience with our professionals</p>
+                <a href="/Professional/List" class="btn btn-gradient btn-lg px-5" style="border-radius: 25px;">
+                    <i class="bi bi-pencil"></i> Write a Review
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+    .reviews-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    }
+    
+    .reviews-overview {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        margin-top: -2rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .rating-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #495057;
+    }
+    
+    .rating-out-of {
+        font-size: 1.5rem;
+        color: #6c757d;
+    }
+    
+    .stars {
+        font-size: 1.2rem;
+    }
+    
+    .rating-bar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .rating-label {
+        width: 30px;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .rating-bar .progress {
+        flex: 1;
+        height: 8px;
+        margin: 0 1rem;
+        border-radius: 10px;
+    }
+    
+    .rating-count {
+        width: 40px;
+        text-align: right;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .reviewer-avatar {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+    }
+    
+    .review-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #495057;
+    }
+    
+    .service-category {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+    }
+    
+    .professional-name {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .empty-state-icon {
+        font-size: 4rem;
+        color: #dee2e6;
+    }
+    
+    .review-card {
+        transition: all 0.3s ease;
+    }
+    
+    .review-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+    
+    .btn {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-gradient {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-gradient:hover {
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .rating-text {
+        font-weight: 600;
+        color: #ffc107;
+    }
+    
+    .progress-bar {
+        border-radius: 10px;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    function filterReviews() {
+        const ratingFilter = document.getElementById('ratingFilter').value;
+        const categoryFilter = document.getElementById('categoryFilter').value;
+        const reviewCards = document.querySelectorAll('.review-card');
+        
+        reviewCards.forEach(card => {
+            const rating = card.getAttribute('data-rating');
+            const category = card.getAttribute('data-category');
+            
+            const ratingMatch = !ratingFilter || rating === ratingFilter;
+            const categoryMatch = !categoryFilter || category === categoryFilter;
+            
+            if (ratingMatch && categoryMatch) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    function resetFilters() {
+        document.getElementById('ratingFilter').value = '';
+        document.getElementById('categoryFilter').value = '';
+        filterReviews();
+    }
+    
+    function likeReview(reviewId) {
+        // Implement like functionality
+        alert(`Liked review ${reviewId}`);
+    }
+    
+    function reportReview(reviewId) {
+        if (confirm('Are you sure you want to report this review?')) {
+            alert(`Review ${reviewId} reported`);
+        }
+    }
+</script>

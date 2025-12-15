@@ -1,0 +1,104 @@
+@model IEnumerable<ProMeet.Models.Appointment>
+
+@{ 
+    ViewData["Title"] = "My Appointments";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">My Appointments</h2>
+        <a asp-controller="Professional" asp-action="Dashboard" class="btn btn-outline-primary">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+            </div>
+            <h4 class="text-muted">No appointments found</h4>
+            <p class="text-muted mb-4">You don't have any appointments yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Client</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Price</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderByDescending(m => m.Date))
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <img src="@(item.Client?.PhotoURL ?? "https://via.placeholder.com/40")" 
+                                             class="rounded-circle me-3" width="40" height="40" 
+                                             alt="@(item.Client?.Name ?? "N/A")">
+                                        <div>
+                                            <div class="fw-bold">@(item.Client?.Name ?? "N/A")</div>
+                                            <div class="small text-muted">
+                                                @if (!string.IsNullOrEmpty(item.ServiceName))
+                                                {
+                                                    <span class="badge bg-light text-dark border me-1">@item.ServiceName</span>
+                                                }
+                                                <span>@(item.Client?.Email ?? "")</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div><i class="bi bi-calendar-event me-2 text-muted"></i>@item.Date.ToString("MMM dd, yyyy")</div>
+                                    <div class="small text-muted"><i class="bi bi-clock me-2"></i>@item.StartTime - @item.EndTime</div>
+                                </td>
+                                <td>
+                                    @if (item.Status == ProMeet.Models.AppointmentStatus.Confirmed)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Confirmed</span>
+                                    }
+                                    else if (item.Status == ProMeet.Models.AppointmentStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">Pending</span>
+                                    }
+                                    else if (item.Status == ProMeet.Models.AppointmentStatus.Canceled)
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">Canceled</span>
+                                    }
+                                    else if (item.Status == ProMeet.Models.AppointmentStatus.Completed)
+                                    {
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="fw-bold">@item.Price.ToString("N0") DH</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="card-footer bg-white border-top-0 pt-0">
+                                        <div class="d-grid gap-2">
+                                            <a asp-action="Details" asp-controller="Appointment" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">View Details</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+

@@ -16,10 +16,10 @@ namespace ProMeet.Models
         public int AppointmentID { get; set; }
         
         [BsonElement("clientId")]
-        public int ClientID { get; set; }
+        public string ClientID { get; set; }
         
         [BsonElement("professionalId")]
-        public int ProfessionalID { get; set; }
+        public string ProfessionalID { get; set; }
         
         [BsonElement("rating")]
         public int Rating { get; set; }
@@ -35,15 +35,8 @@ namespace ProMeet.Models
         
         [BsonElement("dateProvided")]
         public DateTime DateProvided { get; set; } = DateTime.UtcNow;
-        
-        // Nested documents for related data
-        [BsonElement("appointment")]
-        public Appointment? Appointment { get; set; }
-        
-        [BsonElement("client")]
-        public User? Client { get; set; }
-        
-        [BsonElement("professional")]
-        public Professional? Professional { get; set; }
+
+        [BsonIgnore]
+        public ApplicationUser? Client { get; set; }
     }
 }

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Professionals - ProMeet</title>
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
+    <!-- Custom Site CSS -->
+    <link rel="stylesheet" href="wwwroot/css/site.css" />
+    <style>
+        .filter-card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .professional-card {
+            border-radius: 15px;
+            border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .professional-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .professional-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            font-size: 2.5rem;
+            color: #adb5bd;
+        }
+
+        .price-tag {
+            background-color: #f8f9fa;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .rating-badge {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-primary" href="/">ProMeet</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/professional-search.html">Find Professionals</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/register.html">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-primary fw-bold" href="/login.html">Login</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main role="main" class="main-content-wrapper">
+
+        <div class="container my-5 pt-4">
+            <div class="row">
+                <!-- Filters Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="filter-card card sticky-top" style="top: 90px; z-index: 100;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0"><i class="bi bi-funnel"></i> Filters</h5>
+                                <a href="/professional-search.html" class="text-decoration-none small">Reset</a>
+                            </div>
+
+                            <form id="filterForm">
+                                <!-- Search Query -->
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">Search</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0"><i
+                                                class="bi bi-search"></i></span>
+                                        <input type="text" name="query" class="form-control border-start-0"
+                                            placeholder="Name, title, specialty...">
+                                    </div>
+                                </div>
+
+                                <!-- Category -->
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">Category</label>
+                                    <select name="category" class="form-select">
+                                        <option value="">All Categories</option>
+                                        <option value="Healthcare">Healthcare</option>
+                                        <option value="Legal">Legal</option>
+                                        <option value="Coaching">Coaching</option>
+                                        <option value="Finance">Finance</option>
+                                    </select>
+                                </div>
+
+                                <!-- City -->
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted">City</label>
+                                    <select name="city" class="form-select">
+                                        <option value="">All Cities</option>
+                                        <option value="Casablanca">Casablanca</option>
+                                        <option value="Rabat">Rabat</option>
+                                        <option value="Marrakech">Marrakech</option>
+                                        <option value="Tangier">Tangier</option>
+                                    </select>
+                                </div>
+
+                                <button type="button" class="btn btn-primary w-100 rounded-pill mt-3">Apply
+                                    Filters</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Area -->
+                <div class="col-lg-9">
+                    <!-- Results Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="fw-bold mb-1">Available Professionals</h4>
+                            <p class="text-muted small mb-0">Showing top results</p>
+                        </div>
+                    </div>
+
+                    <!-- Professionals List -->
+                    <div class="row g-4">
+                        <!-- Professional 1 -->
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card professional-card h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="d-flex justify-content-center mb-3">
+                                        <div class="professional-avatar mb-3">
+                                            <i class="bi bi-person-circle"></i>
+                                        </div>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">Dr. Sarah Johnson</h5>
+                                    <p class="text-muted mb-2">Cardiologist</p>
+
+                                    <div class="d-flex justify-content-center gap-2 mb-3">
+                                        <span class="rating-badge">
+                                            <i class="bi bi-star-fill text-warning me-1"></i> 4.9
+                                        </span>
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-geo-alt me-1"></i> Casablanca
+                                        </span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                                        <span class="price-tag">400 DH</span>
+                                        <a href="#" class="btn btn-primary btn-sm rounded-pill px-3 book-btn">Book
+                                            Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Professional 2 -->
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card professional-card h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="d-flex justify-content-center mb-3">
+                                        <div class="professional-avatar mb-3">
+                                            <i class="bi bi-person-circle"></i>
+                                        </div>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">Ahmed Benali</h5>
+                                    <p class="text-muted mb-2">Business Lawyer</p>
+
+                                    <div class="d-flex justify-content-center gap-2 mb-3">
+                                        <span class="rating-badge">
+                                            <i class="bi bi-star-fill text-warning me-1"></i> 4.8
+                                        </span>
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-geo-alt me-1"></i> Rabat
+                                        </span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                                        <span class="price-tag">600 DH</span>
+                                        <a href="#" class="btn btn-primary btn-sm rounded-pill px-3 book-btn">Book
+                                            Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Professional 3 -->
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card professional-card h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="d-flex justify-content-center mb-3">
+                                        <div class="professional-avatar mb-3">
+                                            <i class="bi bi-person-circle"></i>
+                                        </div>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">Lisa Chen</h5>
+                                    <p class="text-muted mb-2">Life Coach</p>
+
+                                    <div class="d-flex justify-content-center gap-2 mb-3">
+                                        <span class="rating-badge">
+                                            <i class="bi bi-star-fill text-warning me-1"></i> 5.0
+                                        </span>
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-geo-alt me-1"></i> Online
+                                        </span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                                        <span class="price-tag">300 DH</span>
+                                        <a href="#" class="btn btn-primary btn-sm rounded-pill px-3 book-btn">Book
+                                            Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer border-top text-muted bg-white mt-auto">
+        <div class="container py-4">
+            <div class="text-center small">
+                &copy; 2024 ProMeet - All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="wwwroot/js/auth.js"></script>
+
+    <script>
+        // Handle Book Now buttons
+        document.querySelectorAll('.book-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (requireAuth()) {
+                    // Proceed to booking (mock)
+                    toastr.info('Booking feature coming soon!');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

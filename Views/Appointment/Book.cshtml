@@ -1,95 +1,156 @@
-@model ProMeet.Controllers.BookAppointmentViewModel
+@model ProMeet.Models.ViewModels.BookAppointmentViewModel
 
 @{
     ViewData["Title"] = "Book Appointment";
 }
 
 <div class="container my-5">
-    <div class="row g-5">
+    <!-- Stepper (Desktop) -->
+    <div class="row justify-content-center mb-5 d-none d-md-flex">
+        <div class="col-lg-8">
+            <div class="position-relative d-flex justify-content-between align-items-center">
+                <div class="position-absolute top-50 start-0 translate-middle-y w-100 bg-secondary opacity-25" style="height: 2px; z-index: 0;"></div>
+                
+                <div class="d-flex flex-column align-items-center position-relative z-1 step-indicator active" id="step-indicator-1">
+                    <div class="step-circle bg-primary text-white shadow fw-bold d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px;">1</div>
+                    <span class="small fw-bold mt-2 text-primary bg-body px-2">Select Date & Time</span>
+                </div>
+                
+                <div class="d-flex flex-column align-items-center position-relative z-1 step-indicator" id="step-indicator-2">
+                    <div class="step-circle bg-secondary text-white fw-bold d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px;">2</div>
+                    <span class="small fw-bold mt-2 text-secondary bg-body px-2">Confirm Details</span>
+                </div>
+                
+                <div class="d-flex flex-column align-items-center position-relative z-1 step-indicator" id="step-indicator-3">
+                    <div class="step-circle bg-secondary text-white fw-bold d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px;">3</div>
+                    <span class="small fw-bold mt-2 text-secondary bg-body px-2">Done</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 g-lg-5">
         <!-- Professional Info Sidebar -->
         <div class="col-lg-4">
-            <div class="card sticky-top" style="top: 100px;">
-                <div class="card-body text-center">
-                    <img src="@Model.User.PhotoURL" class="avatar-xl rounded-circle mb-3" alt="@Model.User.Name">
-                    <h4 class="fw-bold mb-1">@Model.User.Name</h4>
-                    <p class="text-muted mb-3">@Model.JobTitle</p>
-                    <hr>
-                    <div class="text-start">
-                        <p class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i>@Model.User.City, @Model.User.Country</p>
-                        <p class="mb-2"><i class="bi bi-laptop text-success me-2"></i>@Model.ConsultationType</p>
-                        <p class="mb-0"><i class="bi bi-star-fill text-warning me-2"></i>@Model.Rating/5.0</p>
+            <div class="card sticky-top border-0 shadow-sm" style="top: 100px; border-radius: 20px; overflow: hidden;">
+                <div class="card-header bg-gradient-primary text-white text-center p-4 border-0" style="background: var(--gradient-primary);">
+                    <img src="@(Model.User?.PhotoURL ?? "https://via.placeholder.com/128x128?text=No+Image")" class="avatar-xl rounded-circle border border-4 border-white shadow mb-3" alt="@(Model.User?.Name ?? "N/A")" style="width: 100px; height: 100px; object-fit: cover;">
+                    <h5 class="fw-bold mb-1">@(Model.User?.Name ?? "N/A")</h5>
+                    <p class="mb-0 opacity-75 small">@(Model.ServiceName ?? Model.JobTitle)</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box bg-primary-subtle text-primary rounded-circle p-2 me-3">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Location</small>
+                            <span class="fw-medium">@(Model.User?.City ?? "N/A"), @(Model.User?.Country ?? "N/A")</span>
+                        </div>
                     </div>
-                    <hr>
-                    <h3 class="fw-bold text-primary mb-0">@Model.Price DH</h3>
-                    <p class="text-muted small">per session</p>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box bg-success-subtle text-success rounded-circle p-2 me-3">
+                            <i class="bi bi-laptop"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Type</small>
+                            <span class="fw-medium">@Model.ConsultationType</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-box bg-warning-subtle text-warning rounded-circle p-2 me-3">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Rating</small>
+                            <span class="fw-medium">@Model.Rating/5.0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-light rounded-3 p-3 text-center">
+                        <small class="text-muted text-uppercase fw-bold tracking-wide">Price per session</small>
+                        <h2 class="fw-bold text-primary mb-0 mt-1">@Model.Price.ToString("C0")</h2>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Booking Form -->
         <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title fw-bold mb-0">Schedule Your Appointment</h4>
-                </div>
-                <div class="card-body">
+            <div class="card border-0 shadow" style="border-radius: 20px;">
+                <div class="card-body p-4 p-lg-5">
                     <form method="post" action="/Appointment/Confirm">
                         @Html.AntiForgeryToken()
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                         
                         <input type="hidden" asp-for="ProfessionalID" />
+                        <input type="hidden" asp-for="ServiceID" />
+                        <input type="hidden" asp-for="ServiceName" />
+                        <input type="hidden" asp-for="JobTitle" />
+                        <input type="hidden" asp-for="Price" />
+                        <input type="hidden" asp-for="Rating" />
+                        <input type="hidden" asp-for="ConsultationType" />
 
                         <!-- Step 1: Date Selection -->
-                        <div id="step-1">
+                        <div id="step-1" class="step-content">
+                            <h3 class="fw-bold mb-4">Select Date & Time</h3>
+                            
                             <div class="mb-4">
-                                <label asp-for="Date" class="form-label fw-bold">Select a Date</label>
-                                <input asp-for="Date" type="date" class="form-control form-control-lg" />
+                                <label asp-for="Date" class="form-label fw-bold text-muted text-uppercase small">Select Date</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-calendar-event text-primary"></i></span>
+                                    <input asp-for="Date" type="date" class="form-control bg-light border-start-0 ps-0" />
+                                </div>
                                 <span asp-validation-for="Date" class="text-danger"></span>
-                                <small class="text-muted">Choose your preferred appointment date.</small>
                             </div>
 
-                            <div class="mb-4">
-                                <label asp-for="TimeSlot" class="form-label fw-bold">Choose a Time Slot</label>
-                                <div class="row g-2">
-                                    @foreach (var timeSlot in new[] { "09:00", "10:00", "11:00", "14:00", "15:00", "16:00" })
-                                    {
-                                        <div class="col-4">
-                                            <input type="radio" class="btn-check" asp-for="TimeSlot" id="time-@timeSlot" value="@timeSlot">
-                                            <label class="btn btn-outline-primary w-100" for="time-@timeSlot">@timeSlot</label>
-                                        </div>
-                                    }
+                            <div class="mb-5">
+                                <label class="form-label fw-bold text-muted text-uppercase small mb-3">Available Time Slots</label>
+                                <div class="row g-3" id="timeSlotsContainer">
+                                    <div class="col-12 text-center text-muted py-5 bg-light rounded-3 border border-dashed">
+                                        <i class="bi bi-calendar2-range fs-1 mb-2 d-block opacity-50"></i>
+                                        Please select a date above to see available time slots.
+                                    </div>
                                 </div>
                                 <span asp-validation-for="TimeSlot" class="text-danger"></span>
                             </div>
 
-                            <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary" onclick="validateAndGoToStep(2)">Next <i class="bi bi-arrow-right"></i></button>
+                            <div class="d-flex justify-content-end pt-3 border-top">
+                                <button type="button" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm" onclick="validateAndGoToStep(2)">
+                                    Next Step <i class="bi bi-arrow-right ms-2"></i>
+                                </button>
                             </div>
                         </div>
 
                         <!-- Step 2: Confirmation -->
-                        <div id="step-2" style="display: none;">
+                        <div id="step-2" class="step-content" style="display: none;">
+                            <h3 class="fw-bold mb-4">Confirm Appointment</h3>
+                            
                             <div class="mb-4">
-                                <h5 class="fw-bold">Confirm Your Details</h5>
-                                <p>Please review your appointment details below before confirming.</p>
-                            </div>
-
-                            <div class="mb-4">
-                                <label asp-for="Reason" class="form-label fw-bold">Reason for Visit (Optional)</label>
-                                <textarea asp-for="Reason" class="form-control" rows="4" placeholder="Briefly describe your reason for consultation..."></textarea>
+                                <label asp-for="Reason" class="form-label fw-bold text-muted text-uppercase small">Reason for Visit (Optional)</label>
+                                <textarea asp-for="Reason" class="form-control bg-light" rows="5" placeholder="Please briefly describe why you're scheduling this appointment..."></textarea>
                                 <span asp-validation-for="Reason" class="text-danger"></span>
                             </div>
 
-                            <div class="alert alert-info d-flex align-items-center">
-                                <i class="bi bi-info-circle-fill fs-4 me-3"></i>
-                                <div>
-                                    <strong>Note:</strong> A confirmation request will be sent to the professional. Your appointment is not final until confirmed.
+                            <div class="card bg-primary-subtle border-0 rounded-3 mb-5">
+                                <div class="card-body d-flex">
+                                    <i class="bi bi-info-circle-fill fs-4 text-primary me-3 flex-shrink-0"></i>
+                                    <div>
+                                        <h6 class="fw-bold text-primary mb-1">Confirmation Required</h6>
+                                        <p class="mb-0 small text-primary-emphasis">Your appointment request will be sent to the professional for approval. You will receive a notification once it is confirmed.</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="goToStep(1)"><i class="bi bi-arrow-left"></i> Back</button>
-                                <button type="submit" class="btn btn-primary">Confirm Booking <i class="bi bi-check-circle"></i></button>
+                            <div class="d-flex justify-content-between pt-3 border-top">
+                                <button type="button" class="btn btn-light btn-lg px-4 rounded-pill" onclick="goToStep(1)">
+                                    <i class="bi bi-arrow-left me-2"></i> Back
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                                    Confirm Booking <i class="bi bi-check-circle ms-2"></i>
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -99,16 +160,95 @@
     </div>
 </div>
 
+<style>
+    /* Custom Radio Button Styling for Time Slots */
+    .time-slot-radio:checked + .time-slot-label {
+        background: var(--gradient-primary);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    .time-slot-label {
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: 1px solid #dee2e6;
+    }
+    
+    .time-slot-label:hover {
+        background-color: #f8f9fa;
+        border-color: #adb5bd;
+    }
+
+    /* Stepper Styling */
+    .step-indicator.active .step-circle {
+        background: var(--gradient-primary) !important;
+    }
+    
+    .step-indicator.active span {
+        color: var(--primary-purple) !important;
+    }
+    
+    .step-indicator.completed .step-circle {
+        background-color: #198754 !important; /* Success green */
+    }
+</style>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // OffDays from Model
+        var offDays = @Html.Raw(Json.Serialize(Model.OffDays ?? new List<int>()));
+        // OffDates from Model (Specific dates YYYY-MM-DD)
+        var offDates = @Html.Raw(Json.Serialize(Model.OffDates ?? new List<string>()));
+        
+        // Pre-selected TimeSlot (for validation errors)
+        var preSelectedTimeSlot = '@Model.TimeSlot';
+
+        function updateStepper(step) {
+            const step1 = document.getElementById('step-indicator-1');
+            const step2 = document.getElementById('step-indicator-2');
+            const step1Circle = step1.querySelector('.step-circle');
+            const step2Circle = step2.querySelector('.step-circle');
+            
+            if (step === 1) {
+                // Reset step 2
+                step2.classList.remove('active');
+                step2Circle.classList.remove('bg-primary', 'shadow');
+                step2Circle.classList.add('bg-secondary');
+                
+                // Set step 1 active
+                step1.classList.add('active');
+                step1Circle.innerHTML = '1';
+                step1Circle.classList.remove('bg-success');
+                step1Circle.classList.add('bg-primary');
+            } else if (step === 2) {
+                // Mark step 1 completed
+                step1.classList.remove('active');
+                step1.classList.add('completed');
+                step1Circle.classList.remove('bg-primary');
+                step1Circle.classList.add('bg-success');
+                step1Circle.innerHTML = '<i class="bi bi-check"></i>';
+                
+                // Set step 2 active
+                step2.classList.add('active');
+                step2Circle.classList.remove('bg-secondary');
+                step2Circle.classList.add('bg-primary', 'shadow');
+            }
+        }
+
         function goToStep(step) {
             if (step === 1) {
                 document.getElementById('step-1').style.display = 'block';
                 document.getElementById('step-2').style.display = 'none';
+                updateStepper(1);
+                window.scrollTo(0, 0);
             } else if (step === 2) {
                 document.getElementById('step-1').style.display = 'none';
                 document.getElementById('step-2').style.display = 'block';
+                updateStepper(2);
+                window.scrollTo(0, 0);
             }
         }
         
@@ -143,18 +283,18 @@
             const selectedTimeSlot = Array.from(timeSlotInputs).find(input => input.checked);
             if (!selectedTimeSlot) {
                 // Add validation message for time slot
-                const timeSlotContainer = document.querySelector('.row.g-2');
-                let errorMsg = timeSlotContainer.querySelector('.invalid-feedback');
+                const timeSlotContainer = document.querySelector('#timeSlotsContainer');
+                let errorMsg = timeSlotContainer.parentNode.querySelector('.invalid-feedback');
                 if (!errorMsg) {
                     errorMsg = document.createElement('div');
-                    errorMsg.className = 'invalid-feedback d-block';
+                    errorMsg.className = 'invalid-feedback d-block mt-2';
                     errorMsg.textContent = 'Please select a time slot';
                     timeSlotContainer.parentNode.appendChild(errorMsg);
                 }
                 isValid = false;
             } else {
                 // Remove any existing error messages
-                const timeSlotContainer = document.querySelector('.row.g-2');
+                const timeSlotContainer = document.querySelector('#timeSlotsContainer');
                 const errorMsg = timeSlotContainer.parentNode.querySelector('.invalid-feedback');
                 if (errorMsg) {
                     errorMsg.remove();
@@ -166,12 +306,87 @@
             }
         }
         
-        // Set minimum date to today
+        // Set minimum date to today and attach listener
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = document.querySelector('[name="Date"]');
             if (dateInput) {
                 const today = new Date().toISOString().split('T')[0];
                 dateInput.setAttribute('min', today);
+                
+                const loadSlots = async function() {
+                    const dateVal = dateInput.value;
+                    const professionalId = document.getElementById('ProfessionalID').value;
+                    
+                    if (!dateVal) return;
+
+                    const container = document.getElementById('timeSlotsContainer');
+                    
+                    // Check for Off Day
+                    const dateObj = new Date(dateVal);
+                    // Use getUTCDay() because input date is YYYY-MM-DD (UTC midnight)
+                    const dayOfWeek = dateObj.getUTCDay(); 
+                    
+                    if (offDays.includes(dayOfWeek)) {
+                        container.innerHTML = '<div class="col-12 text-center text-danger py-4 bg-light rounded-3"><i class="bi bi-x-circle fs-2 d-block mb-2"></i>The professional is not available on this day.<br>Please select another date.</div>';
+                        dateInput.classList.add('is-invalid');
+                        return;
+                    } else if (offDates.includes(dateVal)) {
+                         container.innerHTML = '<div class="col-12 text-center text-danger py-4 bg-light rounded-3"><i class="bi bi-x-circle fs-2 d-block mb-2"></i>The professional is not available on this date.<br>Please select another date.</div>';
+                         dateInput.classList.add('is-invalid');
+                         return;
+                    } else {
+                        dateInput.classList.remove('is-invalid');
+                    }
+
+                    container.innerHTML = '<div class="col-12 text-center py-4"><div class="spinner-border text-primary mb-2" role="status"></div><p class="text-muted mb-0">Checking availability...</p></div>';
+
+                    try {
+                        const response = await fetch(`/Appointment/GetAvailableSlots?professionalId=${professionalId}&date=${dateVal}`);
+                        const slots = await response.json();
+
+                        container.innerHTML = '';
+                        
+                        // Check for specific error object
+                        if (slots.error === "DayOff") {
+                             container.innerHTML = `<div class="col-12 text-center text-danger py-4 bg-light rounded-3"><i class="bi bi-x-circle fs-2 d-block mb-2"></i>${slots.message}</div>`;
+                             dateInput.classList.add('is-invalid');
+                             return;
+                        }
+                        
+                        if (slots.length === 0) {
+                            container.innerHTML = '<div class="col-12 text-center text-muted py-4 bg-light rounded-3"><i class="bi bi-calendar-x fs-2 d-block mb-2"></i>No available slots for this date.</div>';
+                            return;
+                        }
+
+                        slots.forEach(slot => {
+                            const isChecked = slot === preSelectedTimeSlot ? 'checked' : '';
+                            const col = document.createElement('div');
+                            col.className = 'col-4 col-sm-3 col-md-3';
+                            col.innerHTML = `
+                                <input type="radio" class="btn-check time-slot-radio" name="TimeSlot" id="time-${slot}" value="${slot}" ${isChecked}>
+                                <label class="btn btn-outline-light text-dark w-100 py-2 fw-medium time-slot-label bg-white" for="time-${slot}">
+                                    ${slot}
+                                </label>
+                            `;
+                            container.appendChild(col);
+                        });
+
+                    } catch (error) {
+                        console.error(error);
+                        container.innerHTML = '<div class="col-12 text-center text-danger py-4">Error loading slots. Please try again.</div>';
+                    }
+                };
+
+                dateInput.addEventListener('change', function() {
+                    // Reset preSelectedTimeSlot when date changes manually
+                    preSelectedTimeSlot = ''; 
+                    loadSlots();
+                });
+                
+                // Trigger load if date is already selected (e.g. after validation error)
+                if (dateInput.value) {
+                    loadSlots();
+                }
             }
         });
     </script>

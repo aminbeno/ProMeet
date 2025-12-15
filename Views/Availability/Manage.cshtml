@@ -1,224 +1,313 @@
+@model ProMeet.ViewModels.CalendarViewModel
 @{
     ViewData["Title"] = "Manage Availability";
+    var months = Model.Days.GroupBy(d => new { d.Date.Year, d.Date.Month }).ToList();
 }
 
-<div class="container my-5">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold">Manage Availability</h2>
-            <p class="text-muted">Define your working hours, set breaks, and block dates to keep your schedule accurate.</p>
-        </div>
-        <a href="/Professional/Dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
-    </div>
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary"><i class="bi bi-calendar-check"></i> Manage Availability</h2>
+    <p class="text-muted">Click on any day to edit your availability. You can plan for the next 3 months.</p>
 
-    <div class="row g-5">
-        <!-- Left Column: Weekly Hours & Breaks -->
-        <div class="col-lg-8">
-            <form method="post" action="/Availability/Update">
-                <!-- Weekly Schedule -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-0 pt-3 d-flex justify-content-between align-items-center">
-                        <h4 class="fw-bold mb-0">Weekly Schedule</h4>
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="apply-to-all-btn">Apply to All</button>
-                    </div>
-                    <div class="card-body">
-                        <p class="text-muted small">Set your default weekly availability. You can override this for specific dates below.</p>
-                        
-                        <div id="schedule-container">
-                            <!-- Schedule rows will be injected here by JS -->
-                        </div>
-                    </div>
-                </div>
+    <div class="row">
+        @foreach (var monthGrp in months)
+        {
+            var firstDay = monthGrp.First().Date;
+            var monthName = firstDay.ToString("MMMM yyyy");
+            var daysInMonth = monthGrp.ToList();
+            
+            // Calculate padding for first week
+            // DayOfWeek: Sunday=0, Monday=1. If we want Mon start:
+            // Mon(1)=>0, Tue(2)=>1... Sun(0)=>6
+            var firstDayOfWeek = (int)firstDay.DayOfWeek;
+            var padding = firstDayOfWeek == 0 ? 6 : firstDayOfWeek - 1;
 
-                <!-- Breaks -->
-                <div class="card border-0 shadow-sm">
+            <div class="col-md-12 mb-5">
+                <div class="card shadow-sm border-0">
                     <div class="card-header bg-white border-0 pt-3">
-                        <h4 class="fw-bold mb-0">Breaks</h4>
+                        <h4 class="text-center fw-bold">@monthName</h4>
                     </div>
-                    <div class="card-body">
-                        <p class="text-muted small">Set up recurring breaks during your workday, like a lunch break.</p>
-                        <div id="breaks-container">
-                            <!-- Break rows will be injected here by JS -->
+                    <div class="card-body p-4">
+                        <div class="calendar-grid">
+                            <!-- Weekday Headers -->
+                            <div class="calendar-header text-muted small text-center">Mon</div>
+                            <div class="calendar-header text-muted small text-center">Tue</div>
+                            <div class="calendar-header text-muted small text-center">Wed</div>
+                            <div class="calendar-header text-muted small text-center">Thu</div>
+                            <div class="calendar-header text-muted small text-center">Fri</div>
+                            <div class="calendar-header text-muted small text-center">Sat</div>
+                            <div class="calendar-header text-muted small text-center">Sun</div>
+
+                            <!-- Padding Days -->
+                            @for (int i = 0; i < padding; i++)
+                            {
+                                <div class="calendar-day empty bg-light"></div>
+                            }
+
+                            <!-- Actual Days -->
+                            @foreach (var day in daysInMonth)
+                            {
+                                var statusClass = day.IsAvailable ? "available" : "unavailable";
+                                var todayClass = day.IsToday ? "today border-primary" : "";
+                                var overrideClass = day.HasOverride ? "override" : "";
+                                var pastClass = day.IsPast ? "past text-muted" : "";
+                                
+                                <div class="calendar-day @statusClass @todayClass @overrideClass @pastClass" 
+                                     data-date="@day.Date.ToString("yyyy-MM-dd")"
+                                     data-available="@day.IsAvailable.ToString().ToLower()"
+                                     data-start="@day.StartTime.ToString(@"hh\:mm")"
+                                     data-end="@day.EndTime.ToString(@"hh\:mm")"
+                                     onclick="openEditModal(this)">
+                                    
+                                    <div class="day-number">@day.Date.Day</div>
+                                    @if (day.IsAvailable)
+                                    {
+                                        <div class="day-times small">
+                                            @day.StartTime.ToString(@"hh\:mm") - @day.EndTime.ToString(@"hh\:mm")
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="day-status small">Off</div>
+                                    }
+                                </div>
+                            }
                         </div>
-                        <button type="button" class="btn btn-outline-success btn-sm mt-2" id="add-break-btn">
-                            <i class="bi bi-plus-circle me-1"></i> Add Break
-                        </button>
                     </div>
                 </div>
+            </div>
+        }
+    </div>
+</div>
 
-                <!-- Save Button -->
-                <div class="mt-4 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">Save Schedule</button>
-                </div>
-            </form>
-        </div>
+<!-- Edit Modal -->
+<div class="modal fade" id="editAvailabilityModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Edit Availability</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modalDateStr">
+                <h5 id="modalDateDisplay" class="mb-3 text-center fw-bold"></h5>
 
-        <!-- Right Column: Date Overrides -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
-                <div class="card-header bg-white border-0 pt-3">
-                    <h4 class="fw-bold">Date Overrides</h4>
+                <div class="form-check form-switch mb-4 d-flex justify-content-center align-items-center gap-2">
+                    <input class="form-check-input" type="checkbox" id="modalIsAvailable" style="width: 3em; height: 1.5em;">
+                    <label class="form-check-label fw-bold" for="modalIsAvailable">Available</label>
                 </div>
-                <div class="card-body">
-                    <p class="text-muted small">Block specific dates for vacations or add custom availability for a special day.</p>
-                    
-                    <!-- Calendar View -->
-                    <div id="calendar-container" class="mb-3">
-                        <!-- A simple calendar representation or a link to a modal calendar -->
-                        <input type="date" class="form-control" id="date-override-picker">
+
+                <div id="timeInputs" class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small text-muted">Start Time</label>
+                        <input type="time" class="form-control" id="modalStartTime">
                     </div>
-
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-danger" type="button" id="block-date-btn">
-                            <i class="bi bi-calendar-x-fill me-1"></i> Mark as Unavailable
-                        </button>
-                        <button class="btn btn-info text-white" type="button" id="set-custom-hours-btn">
-                            <i class="bi bi-pencil-fill me-1"></i> Set Custom Hours
-                        </button>
+                    <div class="col-6">
+                        <label class="form-label small text-muted">End Time</label>
+                        <input type="time" class="form-control" id="modalEndTime">
                     </div>
-                    
-                    <hr>
-
-                    <h6 class="fw-bold">Upcoming Overrides</h6>
-                    <ul class="list-group list-group-flush" id="overrides-list">
-                        <!-- Override items will be injected here -->
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>Dec 25, 2025</span>
-                            <span class="badge bg-danger-soft text-danger">Unavailable</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>Jan 1, 2026</span>
-                            <span class="badge bg-danger-soft text-danger">Unavailable</span>
-                        </li>
-                    </ul>
                 </div>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-primary px-5 rounded-pill" onclick="saveAvailability()">Save Changes</button>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const scheduleContainer = document.getElementById('schedule-container');
-            const breaksContainer = document.getElementById('breaks-container');
-            const addBreakBtn = document.getElementById('add-break-btn');
-            const applyToAllBtn = document.getElementById('apply-to-all-btn');
+<style>
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+    }
+    
+    .calendar-day {
+        aspect-ratio: 1/1;
+        border-radius: 12px;
+        padding: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background-color: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+    }
 
-            const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    .calendar-day:hover:not(.past) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        z-index: 1;
+    }
 
-            // Initial data (could be loaded from model)
-            const schedule = {
-                Monday: { active: true, start: '09:00', end: '17:00' },
-                Tuesday: { active: true, start: '09:00', end: '17:00' },
-                Wednesday: { active: true, start: '09:00', end: '17:00' },
-                Thursday: { active: true, start: '09:00', end: '17:00' },
-                Friday: { active: true, start: '09:00', end: '13:00' },
-                Saturday: { active: false, start: '', end: '' },
-                Sunday: { active: false, start: '', end: '' },
-            };
+    .calendar-day.available {
+        background-color: #e3f2fd; /* Light Blue */
+        color: #0d6efd;
+        border: 1px solid #bbdefb;
+    }
 
-            const breaks = [
-                { start: '12:00', end: '13:00' }
-            ];
+    .calendar-day.unavailable {
+        background-color: #fff5f5; /* Light Red */
+        color: #dc3545;
+        border: 1px solid #ffcdd2;
+    }
+    
+    .calendar-day.past {
+        opacity: 0.6;
+        cursor: default;
+        background-color: #e9ecef;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+    }
+    .calendar-day.past:hover {
+        transform: none;
+        box-shadow: none;
+    }
 
-            function renderSchedule() {
-                scheduleContainer.innerHTML = '';
-                daysOfWeek.forEach(day => {
-                    const dayData = schedule[day];
-                    const isChecked = dayData.active ? 'checked' : '';
-                    const isDisabled = !dayData.active ? 'disabled' : '';
+    .day-number {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+    }
 
-                    const row = `
-                        <div class="row g-2 align-items-center mb-2 schedule-day-row">
-                            <div class="col-3">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="${day}-switch" data-day="${day}" ${isChecked}>
-                                    <label class="form-check-label fw-bold" for="${day}-switch">${day}</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <input type="time" class="form-control form-control-sm start-time" data-day="${day}" value="${dayData.start}" ${isDisabled}>
-                            </div>
-                            <div class="col-4">
-                                <input type="time" class="form-control form-control-sm end-time" data-day="${day}" value="${dayData.end}" ${isDisabled}>
-                            </div>
-                        </div>
-                    `;
-                    scheduleContainer.insertAdjacentHTML('beforeend', row);
-                });
-            }
+    .day-times, .day-status {
+        font-size: 0.75rem;
+    }
 
-            function renderBreaks() {
-                breaksContainer.innerHTML = '';
-                breaks.forEach((breakItem, index) => {
-                    const row = `
-                        <div class="row g-2 align-items-center mb-2 break-row">
-                            <div class="col-5">
-                                <input type="time" class="form-control form-control-sm" value="${breakItem.start}">
-                            </div>
-                            <div class="col-5">
-                                <input type="time" class="form-control form-control-sm" value="${breakItem.end}">
-                            </div>
-                            <div class="col-2 text-end">
-                                <button type="button" class="btn btn-sm btn-outline-danger remove-break-btn" data-index="${index}"><i class="bi bi-trash"></i></button>
-                            </div>
-                        </div>
-                    `;
-                    breaksContainer.insertAdjacentHTML('beforeend', row);
-                });
-            }
+    .calendar-day.override::after {
+        content: '';
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 6px;
+        height: 6px;
+        background-color: #ffc107; /* Yellow dot for manual override */
+        border-radius: 50%;
+    }
+    
+    .calendar-header {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        padding-bottom: 8px;
+    }
+</style>
 
-            // Event Listeners
-            scheduleContainer.addEventListener('change', function(e) {
-                if (e.target.classList.contains('form-check-input')) {
-                    const day = e.target.dataset.day;
-                    const row = e.target.closest('.schedule-day-row');
-                    const timeInputs = row.querySelectorAll('input[type="time"]');
-                    if (e.target.checked) {
-                        timeInputs.forEach(input => input.disabled = false);
-                        schedule[day].active = true;
-                    } else {
-                        timeInputs.forEach(input => {
-                            input.disabled = true;
-                            input.value = '';
-                        });
-                        schedule[day].active = false;
-                    }
-                }
-            });
+<script>
+    var editModal;
+    var currentCell = null; // Store reference to the cell being edited
 
-            addBreakBtn.addEventListener('click', function() {
-                breaks.push({ start: '', end: '' });
-                renderBreaks();
-            });
-
-            breaksContainer.addEventListener('click', function(e) {
-                if (e.target.closest('.remove-break-btn')) {
-                    const index = e.target.closest('.remove-break-btn').dataset.index;
-                    breaks.splice(index, 1);
-                    renderBreaks();
-                }
-            });
-            
-            applyToAllBtn.addEventListener('click', function() {
-                const firstDay = schedule['Monday'];
-                if (!firstDay.active) return;
-
-                daysOfWeek.forEach(day => {
-                    if (day !== 'Monday') {
-                        schedule[day].active = true;
-                        schedule[day].start = firstDay.start;
-                        schedule[day].end = firstDay.end;
-                    }
-                });
-                renderSchedule();
-            });
-
-            // Initial Render
-            renderSchedule();
-            renderBreaks();
+    document.addEventListener('DOMContentLoaded', function() {
+        editModal = new bootstrap.Modal(document.getElementById('editAvailabilityModal'));
+        
+        document.getElementById('modalIsAvailable').addEventListener('change', function() {
+            toggleTimeInputs(this.checked);
         });
-    </script>
-}
+    });
+
+    function toggleTimeInputs(isAvailable) {
+        var inputs = document.getElementById('timeInputs');
+        var start = document.getElementById('modalStartTime');
+        var end = document.getElementById('modalEndTime');
+        
+        if (isAvailable) {
+            inputs.style.opacity = '1';
+            inputs.style.pointerEvents = 'all';
+            start.disabled = false;
+            end.disabled = false;
+        } else {
+            inputs.style.opacity = '0.5';
+            inputs.style.pointerEvents = 'none';
+            start.disabled = true;
+            end.disabled = true;
+        }
+    }
+
+    function openEditModal(element) {
+        if (element.classList.contains('past')) return;
+
+        currentCell = element; // Save reference
+
+        var date = element.dataset.date;
+        var isAvailable = element.dataset.available === 'true';
+        var start = element.dataset.start;
+        var end = element.dataset.end;
+        
+        document.getElementById('modalDateStr').value = date;
+        // Format date for display (Use noon to avoid timezone issues)
+        var dateObj = new Date(date + 'T12:00:00');
+        document.getElementById('modalDateDisplay').innerText = dateObj.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        document.getElementById('modalIsAvailable').checked = isAvailable;
+        document.getElementById('modalStartTime').value = start;
+        document.getElementById('modalEndTime').value = end;
+        
+        toggleTimeInputs(isAvailable);
+        editModal.show();
+    }
+
+    async function saveAvailability() {
+        var date = document.getElementById('modalDateStr').value;
+        var isAvailable = document.getElementById('modalIsAvailable').checked;
+        var start = document.getElementById('modalStartTime').value;
+        var end = document.getElementById('modalEndTime').value;
+
+        // Format times as TimeSpan strings (HH:mm:00)
+        if (start.length === 5) start += ":00";
+        if (end.length === 5) end += ":00";
+
+        var data = {
+            date: date,
+            isAvailable: isAvailable,
+            startTime: start,
+            endTime: end
+        };
+
+        try {
+            const response = await fetch('/Availability/SaveDailyAvailability', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                // Update UI immediately without reload
+                if (currentCell) {
+                    // Update data attributes
+                    currentCell.dataset.available = isAvailable.toString().toLowerCase();
+                    currentCell.dataset.start = start.substring(0, 5);
+                    currentCell.dataset.end = end.substring(0, 5);
+
+                    // Update Classes
+                    currentCell.classList.remove('available', 'unavailable', 'override');
+                    currentCell.classList.add(isAvailable ? 'available' : 'unavailable');
+                    currentCell.classList.add('override'); // It's now an override
+
+                    // Update Content
+                    var dayNum = currentCell.querySelector('.day-number').innerText;
+                    var contentHtml = `<div class="day-number">${dayNum}</div>`;
+                    
+                    if (isAvailable) {
+                        contentHtml += `<div class="day-times small">${start.substring(0, 5)} - ${end.substring(0, 5)}</div>`;
+                    } else {
+                        contentHtml += `<div class="day-status small">Off</div>`;
+                    }
+                    currentCell.innerHTML = contentHtml;
+                }
+                
+                editModal.hide();
+                // Show small success toast or feedback? Optional.
+            } else {
+                alert('Failed to save availability. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred.');
+        }
+    }
+</script>
+

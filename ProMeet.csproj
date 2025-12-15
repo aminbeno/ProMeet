@@ -7,7 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="3.5.0" />
+    <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="7.0.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ProMeet.Tests\**" />
+    <Content Remove="ProMeet.Tests\**" />
+    <EmbeddedResource Remove="ProMeet.Tests\**" />
+    <None Remove="ProMeet.Tests\**" />
   </ItemGroup>
 
 </Project>

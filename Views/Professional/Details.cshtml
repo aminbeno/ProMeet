@@ -1,7 +1,10 @@
+@using Microsoft.AspNetCore.Identity
+@using ProMeet.Models
+@inject UserManager<ApplicationUser> UserManager
 @model ProMeet.Models.Professional
 
 @{
-    ViewData["Title"] = Model.User.Name;
+    ViewData["Title"] = Model.User?.Name ?? "Professional Details";
 }
 
 <!-- Professional Details Hero Section -->
@@ -16,6 +19,12 @@
 
 <style>
 /* Professional Details Modern Styling */
+:root {
+    --primary-blue: #0d6efd;
+    --amber: #ffc107;
+    --green: #198754;
+}
+
 .professional-hero-section {
     background: linear-gradient(135deg, var(--deep-blue) 0%, var(--primary-blue) 100%);
     padding: 4rem 0 2rem;
@@ -408,12 +417,12 @@
                 <div class="professional-card">
                     <div class="card-body text-center p-4">
                         <div class="profile-image-wrapper">
-                            <img src="@Model.User.PhotoURL" class="profile-image" alt="@Model.User.Name">
+                            <img src="@(Model.User?.PhotoURL ?? "/images/default-avatar.png")" class="profile-image" alt="@(Model.User?.Name ?? "User")">
                             <div class="profile-image-overlay">
                                 <i class="bi bi-camera-fill"></i>
                             </div>
                         </div>
-                        <h3 class="fw-bold text-deep-blue mb-2">@Model.User.Name</h3>
+                        <h3 class="fw-bold text-deep-blue mb-2">@(Model.User?.Name ?? "Professional")</h3>
                         <p class="job-title">@Model.JobTitle</p>
                         <div class="rating-container mb-3">
                             <div class="rating-stars me-2">
@@ -426,19 +435,25 @@
                         </div>
                         <div class="location-info">
                             <i class="bi bi-geo-alt-fill me-1"></i>
-                            <span>@Model.User.City, @Model.User.Country</span>
+                            <span>@(Model.User?.City ?? "N/A"), @(Model.User?.Country ?? "N/A")</span>
                         </div>
                     </div>
                     <div class="card-footer bg-light p-4 border-0">
+                        @* Removed generic price display as per request to show only service-specific prices *@
+                        @* 
                         <div class="price-tag mb-3">
                             <span class="price-amount">@Model.Price DH</span>
                             <span class="price-unit">/ session</span>
                         </div>
+                        *@
                         <div class="action-buttons">
-                            <a href="/Appointment/Book/@Model.ProfessionalID" class="btn btn-primary btn-lg btn-book">
+                            <a asp-controller="Appointment" asp-action="Book" asp-route-professionalId="@Model.Id" class="btn btn-primary btn-lg btn-book">
                                 <i class="bi bi-calendar-check me-2"></i>Book Appointment
                             </a>
-                            <button class="btn btn-outline-secondary btn-message">
+                            <a asp-controller="Review" asp-action="Create" asp-route-professionalId="@Model.Id" class="btn btn-outline-secondary btn-lg btn-message">
+                                <i class="bi bi-star me-2"></i>Write a Review
+                            </a>
+                            <button class="btn btn-outline-secondary btn-lg btn-message">
                                 <i class="bi bi-chat-dots me-2"></i>Send Message
                             </button>
                         </div>
@@ -483,6 +498,54 @@
                             </div>
                             
                             <div class="section-divider"></div>
+
+                            <!-- Added Professional Details Grid -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                                        <div class="flex-shrink-0">
+                                            <i class="bi bi-briefcase fs-3 text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1 fw-bold">Specialty</h6>
+                                            <p class="mb-0 text-muted small">@Model.Specialty</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                                        <div class="flex-shrink-0">
+                                            <i class="bi bi-laptop fs-3 text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1 fw-bold">Consultation</h6>
+                                            <p class="mb-0 text-muted small">@Model.ConsultationType</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                                        <div class="flex-shrink-0">
+                                            <i class="bi bi-geo-alt fs-3 text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1 fw-bold">Location</h6>
+                                            <p class="mb-0 text-muted small">@(Model.User?.City ?? "Online"), @(Model.User?.Country ?? "")</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                                        <div class="flex-shrink-0">
+                                            <i class="bi bi-calendar-check fs-3 text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1 fw-bold">Member Since</h6>
+                                            <p class="mb-0 text-muted small">@Model.CreatedAt.ToString("MMMM yyyy")</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <div class="section-header">
                                 <h4 class="section-title">
@@ -513,24 +576,50 @@
                                 </h4>
                             </div>
                             <div class="services-grid">
-                                <div class="service-card">
-                                    <div class="service-icon">
-                                        <i class="bi bi-check-circle-fill text-green"></i>
+                                @if (Model.Services != null && Model.Services.Any())
+                                {
+                                    @foreach (var service in Model.Services)
+                                    {
+                                        <div class="service-card">
+                                            <div class="service-icon">
+                                                <i class="bi bi-gear-fill text-primary"></i>
+                                            </div>
+                                            <div class="service-content w-100">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <h5 class="service-title">@service.Name</h5>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="badge bg-success rounded-pill">@service.Price.ToString("0.##") DH</span>
+                                                        <a asp-controller="Appointment" asp-action="Book" asp-route-professionalId="@Model.Id" asp-route-serviceId="@service.Id" class="btn btn-sm btn-primary rounded-pill px-3">
+                                                            <i class="bi bi-calendar-check me-1"></i> Book
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <p class="service-description">@service.Description</p>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="service-card">
+                                        <div class="service-icon">
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                        </div>
+                                        <div class="service-content">
+                                            <h5 class="service-title">Specialty</h5>
+                                            <p class="service-description">@Model.Specialty</p>
+                                        </div>
                                     </div>
-                                    <div class="service-content">
-                                        <h5 class="service-title">Specialty</h5>
-                                        <p class="service-description">@Model.Specialty</p>
+                                    <div class="service-card">
+                                        <div class="service-icon">
+                                            <i class="bi bi-laptop text-primary"></i>
+                                        </div>
+                                        <div class="service-content">
+                                            <h5 class="service-title">Consultation Type</h5>
+                                            <p class="service-description">@Model.ConsultationType</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="service-card">
-                                    <div class="service-icon">
-                                        <i class="bi bi-laptop text-primary"></i>
-                                    </div>
-                                    <div class="service-content">
-                                        <h5 class="service-title">Consultation Type</h5>
-                                        <p class="service-description">@Model.ConsultationType</p>
-                                    </div>
-                                </div>
+                                }
                             </div>
                         </div>
 
@@ -551,21 +640,38 @@
                                             <div class="review-header">
                                                 <div class="reviewer-info">
                                                     <div class="reviewer-avatar">
-                                                        <i class="bi bi-person-circle"></i>
+                                                        @if (!string.IsNullOrEmpty(review.Client?.PhotoURL))
+                                                        {
+                                                            <img src="@review.Client.PhotoURL" alt="@(review.Client.Name ?? "User")" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="bi bi-person-circle" style="font-size: 2.5rem; color: #6c757d;"></i>
+                                                        }
                                                     </div>
-                                                    <div class="reviewer-details">
-                                                        <h6 class="reviewer-name">Anonymous Client</h6>
-                                                        <p class="review-date">@review.DateProvided.ToShortDateString()</p>
+                                                    <div class="reviewer-details ms-2">
+                                                        <h6 class="reviewer-name mb-0">@(!string.IsNullOrEmpty(review.Client?.Name) ? review.Client.Name : "Anonymous Client")</h6>
+                                                        <p class="review-date text-muted small mb-0">@review.DateProvided.ToShortDateString()</p>
                                                     </div>
                                                 </div>
-                                                <div class="review-rating">
-                                                    @for (int i = 0; i < 5; i++)
+                                                <div class="d-flex align-items-center">
+                                                    <div class="review-rating me-3">
+                                                        @for (int i = 0; i < 5; i++)
+                                                        {
+                                                            <i class="bi @(i < review.Rating ? "bi-star-fill text-warning" : "bi-star text-muted")"></i>
+                                                        }
+                                                    </div>
+                                                    @if (User.Identity.IsAuthenticated && review.ClientID == UserManager.GetUserId(User))
                                                     {
-                                                        <i class="bi @(i < review.Rating ? "bi-star-fill text-amber" : "bi-star")"></i>
+                                                        <form asp-controller="Review" asp-action="Delete" asp-route-id="@review.ReviewID" method="post" onsubmit="return confirm('Are you sure you want to delete this review?');" class="d-inline">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Review">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
                                                     }
                                                 </div>
                                             </div>
-                                            <div class="review-content">
+                                            <div class="review-content mt-2">
                                                 <p class="review-text">@review.Comment</p>
                                             </div>
                                         </div>
@@ -590,3 +696,14 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+

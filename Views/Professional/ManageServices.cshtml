@@ -1,0 +1,57 @@
+@model IEnumerable<ProMeet.Models.Service>
+
+@{ 
+    ViewData["Title"] = "Manage Services";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Manage Services</h2>
+        <a asp-action="CreateService" class="btn btn-success"><i class="bi bi-plus-circle"></i> Create New Service</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.Name)</th>
+                            <th>@Html.DisplayNameFor(model => model.Description)</th>
+                            <th>@Html.DisplayNameFor(model => model.Price)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                @foreach (var item in Model) {
+                        <tr>
+                            <td class="fw-bold">@Html.DisplayFor(modelItem => item.Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                            <td>$@Html.DisplayFor(modelItem => item.Price)</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-action="EditService" asp-route-id="@item.ServiceID" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+                                    <a asp-action="ServiceDetails" asp-route-id="@item.ServiceID" class="btn btn-outline-info btn-sm"><i class="bi bi-info-circle"></i> Details</a>
+                                    <a asp-action="DeleteService" asp-route-id="@item.ServiceID" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                }
+                    </tbody>
+                </table>
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-briefcase text-muted" style="font-size: 3rem;"></i>
+                        <p class="mt-3 text-muted">You haven't added any services yet.</p>
+                        <a asp-action="CreateService" class="btn btn-primary mt-2">Add Your First Service</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a asp-action="Dashboard" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+    </div>
+</div>

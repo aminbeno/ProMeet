@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - ProMeet</title>
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
+    <!-- Custom Site CSS -->
+    <link rel="stylesheet" href="wwwroot/css/site.css" />
+
+    <!-- Google Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body class="bg-light">
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-primary" href="/">ProMeet</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/register.html">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active text-primary fw-bold" href="/login.html">Login</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main role="main" class="main-content-wrapper">
+
+        <div class="container my-5 pt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-5">
+                    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                        <div class="card-header bg-primary text-white text-center py-4 border-0">
+                            <h3 class="fw-bold mb-0">Welcome Back</h3>
+                            <p class="mb-0 opacity-75">Login to your account</p>
+                        </div>
+                        <div class="card-body p-5">
+                            <form id="loginForm">
+                                <div class="mb-4">
+                                    <label for="email" class="form-label fw-bold text-muted small">Email Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i
+                                                class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control bg-light border-start-0" id="email"
+                                            name="email" placeholder="name@example.com" required>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label for="password"
+                                            class="form-label fw-bold text-muted small">Password</label>
+                                        <a href="#" class="small text-decoration-none">Forgot Password?</a>
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i
+                                                class="bi bi-lock"></i></span>
+                                        <input type="password" class="form-control bg-light border-start-0"
+                                            id="password" name="password" placeholder="Enter your password" required>
+                                    </div>
+                                </div>
+                                <div class="mb-4 form-check">
+                                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                                    <label class="form-check-label small text-muted" for="rememberMe">Remember
+                                        me</label>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                                        <span class="spinner-border spinner-border-sm me-2 d-none"
+                                            id="loginSpinner"></span>
+                                        Login
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="text-center mt-4">
+                                <p class="text-muted small">Don't have an account? <a href="/register.html"
+                                        class="fw-bold text-decoration-none">Register here</a></p>
+                            </div>
+
+                            <div class="position-relative my-4">
+                                <hr class="text-muted opacity-25">
+                                <span
+                                    class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">OR</span>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                                    data-callback="handleGoogleSignIn" data-auto_prompt="false">
+                                </div>
+                                <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+                                    data-text="sign_in_with" data-shape="pill" data-logo_alignment="left"
+                                    data-width="100%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer border-top text-muted bg-white mt-auto">
+        <div class="container py-4">
+            <div class="text-center small">
+                &copy; 2024 ProMeet - All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="wwwroot/js/auth.js"></script>
+
+    <script>
+        // Check if already logged in
+        if (isAuthenticated()) {
+            const user = getUser();
+            if (user.userType === 'Professional') {
+                window.location.href = '/professional/dashboard';
+            } else {
+                window.location.href = '/';
+            }
+        }
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const spinner = document.getElementById('loginSpinner');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            // Show loading
+            spinner.classList.remove('d-none');
+            submitBtn.disabled = true;
+
+            try {
+                const result = await login(email, password);
+
+                if (result.success) {
+                    toastr.success('Login successful! Redirecting...');
+
+                    // Redirect based on user type
+                    setTimeout(() => {
+                        if (result.user.userType === 'Professional') {
+                            window.location.href = '/professional/dashboard';
+                        } else {
+                            window.location.href = '/';
+                        }
+                    }, 1000);
+                } else {
+                    toastr.error(result.message || 'Login failed. Please try again.');
+                }
+            } catch (error) {
+                toastr.error('An error occurred. Please try again.');
+            } finally {
+                spinner.classList.add('d-none');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Handle Google Sign-In
+        async function handleGoogleSignIn(response) {
+            try {
+                const result = await loginWithGoogle(response.credential);
+
+                if (result.success) {
+                    toastr.success('Google login successful! Redirecting...');
+
+                    setTimeout(() => {
+                        if (result.user.userType === 'Professional') {
+                            window.location.href = '/professional/dashboard';
+                        } else {
+                            window.location.href = '/';
+                        }
+                    }, 1000);
+                } else {
+                    toastr.error(result.message || 'Google login failed. Please try again.');
+                }
+            } catch (error) {
+                toastr.error('An error occurred during Google login.');
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -21,7 +21,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <p class="text-muted small mb-1">Professional</p>
-                                <p class="fw-bold mb-0">@Model.Professional.User.Name</p>
+                                <p class="fw-bold mb-0">@(Model.Professional?.User?.Name ?? "N/A")</p>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <p class="text-muted small mb-1">Date</p>

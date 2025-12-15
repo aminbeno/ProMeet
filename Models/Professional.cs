@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace ProMeet.Models
@@ -9,13 +9,10 @@ namespace ProMeet.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
         
-        [BsonElement("professionalId")]
         public int ProfessionalID { get; set; }
         
-        [BsonElement("userId")]
-        public int UserID { get; set; }
+
         
-        [BsonElement("categoryId")]
         public int CategoryID { get; set; }
         
         [BsonElement("jobTitle")]
@@ -37,7 +34,7 @@ namespace ProMeet.Models
         public string ConsultationType { get; set; } = "";
         
         [BsonElement("price")]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
         
         [BsonElement("isValidated")]
         public bool IsValidated { get; set; }
@@ -56,7 +53,7 @@ namespace ProMeet.Models
         
         // Nested documents instead of navigation properties
         [BsonElement("user")]
-        public User? User { get; set; }
+        public ApplicationUser? User { get; set; }
         
         [BsonElement("category")]
         public Category? Category { get; set; }
@@ -70,5 +67,9 @@ namespace ProMeet.Models
         
         [BsonIgnore]
         public virtual ICollection<Availability> Availabilities { get; set; } = new List<Availability>();
+
+        [BsonIgnore]
+        public virtual ICollection<Service> Services { get; set; } = new List<Service>();
     }
 }
+

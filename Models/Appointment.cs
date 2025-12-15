@@ -13,10 +13,16 @@ namespace ProMeet.Models
         public int AppointmentID { get; set; }
         
         [BsonElement("clientId")]
-        public int ClientID { get; set; }
+        public string ClientID { get; set; }
         
         [BsonElement("professionalId")]
-        public int ProfessionalID { get; set; }
+        public string ProfessionalID { get; set; }
+
+        [BsonElement("serviceId")]
+        public string? ServiceID { get; set; }
+
+        [BsonElement("serviceName")]
+        public string? ServiceName { get; set; }
         
         [BsonElement("date")]
         public DateTime Date { get; set; }
@@ -26,6 +32,9 @@ namespace ProMeet.Models
         
         [BsonElement("endTime")]
         public TimeSpan EndTime { get; set; }
+
+        [BsonElement("price")]
+        public double Price { get; set; }
         
         [BsonElement("status")]
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
@@ -44,13 +53,22 @@ namespace ProMeet.Models
         
         // Nested documents for related data
         [BsonElement("client")]
-        public User? Client { get; set; }
+        public ApplicationUser? Client { get; set; }
         
         [BsonElement("professional")]
         public Professional? Professional { get; set; }
         
         [BsonElement("review")]
         public Review? Review { get; set; }
+
+        [BsonElement("suggestedDate")]
+        public DateTime? SuggestedDate { get; set; }
+
+        [BsonElement("suggestedStartTime")]
+        public TimeSpan? SuggestedStartTime { get; set; }
+
+        [BsonElement("isRescheduleRequested")]
+        public bool IsRescheduleRequested { get; set; }
     }
     
     public enum AppointmentStatus

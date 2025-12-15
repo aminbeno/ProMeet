@@ -1,16 +1,27 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ProMeet.Models;
-using System.Diagnostics;
+using ProMeet.ViewModels;
+using System.Threading.Tasks;
+using ProMeet.Data;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using MongoDB.Driver;
 
 namespace ProMeet.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<AccountController> _logger;
+        private readonly MongoDbContext _context;
 
-        public AccountController(ILogger<AccountController> logger)
+        public AccountController(MongoDbContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
         {
+            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
             _logger = logger;
         }
 
@@ -32,12 +43,28 @@ namespace ProMeet.Controllers
         {
             if (ModelState.IsValid)
             {
-                // TODO: Implement actual authentication logic
-                // For now, we'll simulate a successful login
-                _logger.LogInformation($"Login attempt for email: {model.Email}");
-                
-                // Redirect to home page after successful login
-                return RedirectToAction("Index", "Home");
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation($"User {model.Email} logged in.");
+
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    if (user != null)
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+                        if (roles.Contains("Professional"))
+                        {
+                            return RedirectToAction("Dashboard", "Professional");
+                        }
+                    }
+                    
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View(model);
+                }
             }
             
             // If we got this far, something failed, redisplay form
@@ -62,12 +89,44 @@ namespace ProMeet.Controllers
         {
             if (ModelState.IsValid)
             {
-                // TODO: Implement actual registration logic
-                // For now, we'll simulate a successful registration
-                _logger.LogInformation($"Registration attempt for email: {model.Email}");
-                
-                // Redirect to login page after successful registration
-                return RedirectToAction("Login", "Account");
+                var user = new ApplicationUser 
+                {
+                    UserName = model.Email, 
+                    Email = model.Email, 
+                    Name = $"{model.FirstName} {model.LastName}",
+                    UserType = model.UserType,
+                    ProfessionType = model.UserType == "Professional" ? model.ProfessionType : null,
+                    OrganizationName = model.OrganizationName,
+                    City = model.City,
+                    Country = model.Country,
+                    Phone = model.Phone,
+                    Birthday = model.Birthday
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation($"User {model.Email} created a new account with password.");
+
+                    // Assign role to user
+                    await _userManager.AddToRoleAsync(user, model.UserType);
+
+                    if (model.UserType == "Professional")
+                    {
+                        var professional = new Professional
+                        {
+                            User = user,
+                            Specialty = model.ProfessionType ?? ""
+                        };
+                        await _context.Professionals.InsertOneAsync(professional);
+                    }
+
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Index", "Home");
+                }
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
             
             // If we got this far, something failed, redisplay form
@@ -79,16 +138,90 @@ namespace ProMeet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            // TODO: Implement actual logout logic
-            _logger.LogInformation("User logged out");
-            
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation("User logged out.");
             return RedirectToAction("Index", "Home");
         }
 
         // GET: /Account/Profile
-        public IActionResult Profile()
+        public async Task<IActionResult> Profile()
         {
-            return View();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        // POST: /Account/Profile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile(ApplicationUser model, string firstName, string lastName)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Update user properties
+            // Note: UserName changes might require re-login or security checks, but we'll allow it for now if that's the requirement.
+            // Usually UserName is not editable or handled separately.
+            if (model.UserName != user.UserName)
+            {
+                var userNameExists = await _userManager.FindByNameAsync(model.UserName);
+                if (userNameExists != null && userNameExists.Id != user.Id)
+                {
+                    ModelState.AddModelError("UserName", "Username is already taken.");
+                    return View(user);
+                }
+                user.UserName = model.UserName;
+            }
+
+            user.Name = $"{firstName} {lastName}".Trim();
+            user.OrganizationName = model.OrganizationName;
+            user.City = model.City;
+            user.Country = model.Country;
+            user.Phone = model.Phone;
+            user.Birthday = model.Birthday;
+            
+            // Email is usually not updated here or requires verification, but if requested:
+            if (model.Email != user.Email)
+            {
+                 var emailExists = await _userManager.FindByEmailAsync(model.Email);
+                 if (emailExists != null && emailExists.Id != user.Id)
+                 {
+                     ModelState.AddModelError("Email", "Email is already taken.");
+                     return View(user);
+                 }
+                 user.Email = model.Email;
+            }
+
+            user.UpdatedAt = DateTime.UtcNow;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                // Sync with Professional collection if user is a professional
+                if (user.UserType == "Professional")
+                {
+                    var updateFilter = Builders<Professional>.Filter.Eq("User._id", user.Id);
+                    var updateDefinition = Builders<Professional>.Update.Set(p => p.User, user);
+                    await _context.Professionals.UpdateOneAsync(updateFilter, updateDefinition);
+                }
+
+                TempData["StatusMessage"] = "Profile updated successfully";
+                return RedirectToAction("Profile");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(user);
         }
 
         // POST: /Account/UploadProfilePhoto
@@ -135,8 +268,20 @@ namespace ProMeet.Controllers
                 // Generate the URL for the saved image
                 var photoUrl = $"/images/profiles/{fileName}";
 
-                // TODO: Update user's PhotoURL in database
-                // For now, we'll just return the URL
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    user.PhotoURL = photoUrl;
+                    await _userManager.UpdateAsync(user);
+
+                    // Sync with Professional collection if user is a professional
+                    if (user.UserType == "Professional")
+                    {
+                        var updateFilter = Builders<Professional>.Filter.Eq("User._id", user.Id);
+                        var updateDefinition = Builders<Professional>.Update.Set(p => p.User, user);
+                        await _context.Professionals.UpdateOneAsync(updateFilter, updateDefinition);
+                    }
+                }
 
                 return Json(new { success = true, photoUrl = photoUrl });
             }
@@ -186,6 +331,34 @@ namespace ProMeet.Controllers
         [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Last name can only contain letters and spaces")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Please select a user type")]
+        [Display(Name = "I am a")]
+        public string UserType { get; set; } = string.Empty;
+
+        [Display(Name = "Type of Profession")]
+        public string? ProfessionType { get; set; }
+
+        [Display(Name = "Organization Name")]
+        public string? OrganizationName { get; set; }
+
+        [Required(ErrorMessage = "City is required")]
+        [Display(Name = "City")]
+        public string City { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Country is required")]
+        [Display(Name = "Country")]
+        public string Country { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Phone number is required")]
+        [Phone(ErrorMessage = "Please enter a valid phone number")]
+        [Display(Name = "Phone Number")]
+        public string Phone { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Birthday is required")]
+        [DataType(DataType.Date)]
+        [Display(Name = "Birthday")]
+        public DateTime? Birthday { get; set; }
 
         [Required(ErrorMessage = "Email address is required")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address")]

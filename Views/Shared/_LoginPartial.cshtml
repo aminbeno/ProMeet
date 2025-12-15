@@ -1,6 +1,11 @@
 @using Microsoft.AspNetCore.Identity
-@inject SignInManager<User> SignInManager
-@inject UserManager<User> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var displayName = user?.Name ?? User.Identity?.Name ?? "User";
+}
 
 <ul class="navbar-nav ms-auto">
 @if (SignInManager.IsSignedIn(User))
@@ -8,9 +13,16 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <div class="user-avatar">
-                <i class="bi bi-person-circle"></i>
+                @if (!string.IsNullOrEmpty(user?.PhotoURL))
+                {
+                    <img src="@user.PhotoURL" alt="@displayName" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                }
+                else
+                {
+                    <i class="bi bi-person-circle"></i>
+                }
             </div>
-            <span class="d-none d-md-inline">Hello @User.Identity?.Name!</span>
+            <span class="d-none d-md-inline">Hello @displayName!</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="border-radius: 15px; min-width: 200px;">
             <li>
@@ -29,6 +41,11 @@
                 <li>
                     <a class="dropdown-item d-flex align-items-center gap-2" asp-controller="Professional" asp-action="Dashboard">
                         <i class="bi bi-speedometer2"></i> Professional Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" asp-controller="Professional" asp-action="ManageServices">
+                        <i class="bi bi-briefcase"></i> My Services
                     </a>
                 </li>
                 <li>

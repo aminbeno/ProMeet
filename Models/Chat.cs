@@ -36,7 +36,7 @@ namespace ProMeet.Models
         
         // Nested documents for related data
         [BsonElement("client")]
-        public User? Client { get; set; }
+        public ApplicationUser? Client { get; set; }
         
         [BsonElement("professional")]
         public Professional? Professional { get; set; }

@@ -1,0 +1,77 @@
+@model ProMeet.Models.Annonce
+
+@{ 
+    ViewData["Title"] = "Create Annonce";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h1 class="card-title text-center fw-bold mb-4">Create Annonce</h1>
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Title" class="form-control" placeholder="Title" />
+                            <label asp-for="Title"></label>
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Category" class="form-control" placeholder="Category" />
+                            <label asp-for="Category"></label>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input asp-for="Specialty" class="form-control" placeholder="Specialty" />
+                            <label asp-for="Specialty"></label>
+                            <span asp-validation-for="Specialty" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Description" class="form-control" placeholder="Description" style="height: 120px;"></textarea>
+                            <label asp-for="Description"></label>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="YearsOfExperience" class="form-control" placeholder="Years of Experience" />
+                            <label asp-for="YearsOfExperience"></label>
+                            <span asp-validation-for="YearsOfExperience" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Location" class="form-control" placeholder="Location" />
+                            <label asp-for="Location"></label>
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Availability" class="form-control" placeholder="Availability" />
+                            <label asp-for="Availability"></label>
+                            <span asp-validation-for="Availability" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-circle me-2"></i>Create
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a asp-action="Index" class="text-decoration-none">
+                    <i class="bi bi-arrow-left me-1"></i>Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

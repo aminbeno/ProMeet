@@ -54,67 +54,68 @@ namespace ProMeet.Data
 
         private async Task CreateIndexesAsync()
         {
-            // Users collection indexes
-            var usersCollection = _context.Users;
-            await usersCollection.Indexes.CreateOneAsync(new CreateIndexModel<User>(
-                Builders<User>.IndexKeys.Ascending(u => u.UserID),
-                new CreateIndexOptions { Unique = true }));
-            await usersCollection.Indexes.CreateOneAsync(new CreateIndexModel<User>(
-                Builders<User>.IndexKeys.Ascending(u => u.Email)));
+
 
             // Professionals collection indexes
             var professionalsCollection = _context.Professionals;
             await professionalsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Professional>(
                 Builders<Professional>.IndexKeys.Ascending(p => p.ProfessionalID),
-                new CreateIndexOptions { Unique = true }));
+                new CreateIndexOptions { Unique = true, Name = "idx_professional_id" }));
+
             await professionalsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Professional>(
-                Builders<Professional>.IndexKeys.Ascending(p => p.UserID)));
-            await professionalsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Professional>(
-                Builders<Professional>.IndexKeys.Ascending(p => p.CategoryID)));
+                Builders<Professional>.IndexKeys.Ascending(p => p.CategoryID),
+                new CreateIndexOptions { Name = "idx_professional_categoryId" }));
 
             // Appointments collection indexes
             var appointmentsCollection = _context.Appointments;
             await appointmentsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Appointment>(
                 Builders<Appointment>.IndexKeys.Ascending(a => a.AppointmentID),
-                new CreateIndexOptions { Unique = true }));
+                new CreateIndexOptions { Unique = true, Name = "idx_appointment_id" }));
             await appointmentsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Appointment>(
-                Builders<Appointment>.IndexKeys.Ascending(a => a.ClientID)));
+                Builders<Appointment>.IndexKeys.Ascending(a => a.ClientID),
+                new CreateIndexOptions { Name = "idx_appointment_clientId" }));
             await appointmentsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Appointment>(
-                Builders<Appointment>.IndexKeys.Ascending(a => a.ProfessionalID)));
+                Builders<Appointment>.IndexKeys.Ascending(a => a.ProfessionalID),
+                new CreateIndexOptions { Name = "idx_appointment_professionalId" }));
             await appointmentsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Appointment>(
-                Builders<Appointment>.IndexKeys.Ascending(a => a.Date)));
+                Builders<Appointment>.IndexKeys.Ascending(a => a.Date),
+                new CreateIndexOptions { Name = "idx_appointment_date" }));
 
             // Reviews collection indexes
             var reviewsCollection = _context.Reviews;
             await reviewsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Review>(
                 Builders<Review>.IndexKeys.Ascending(r => r.ReviewID),
-                new CreateIndexOptions { Unique = true }));
+                new CreateIndexOptions { Unique = true, Name = "idx_review_id" }));
             await reviewsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Review>(
-                Builders<Review>.IndexKeys.Ascending(r => r.ProfessionalID)));
+                Builders<Review>.IndexKeys.Ascending(r => r.ProfessionalID),
+                new CreateIndexOptions { Name = "idx_review_professionalId" }));
             await reviewsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Review>(
-                Builders<Review>.IndexKeys.Ascending(r => r.AppointmentID)));
+                Builders<Review>.IndexKeys.Ascending(r => r.AppointmentID),
+                new CreateIndexOptions { Name = "idx_review_appointmentId" }));
 
             // Categories collection indexes
             var categoriesCollection = _context.Categories;
             await categoriesCollection.Indexes.CreateOneAsync(new CreateIndexModel<Category>(
                 Builders<Category>.IndexKeys.Ascending(c => c.CategoryID),
-                new CreateIndexOptions { Unique = true }));
+                new CreateIndexOptions { Unique = true, Name = "idx_category_id" }));
 
             // Availabilities collection indexes
             var availabilitiesCollection = _context.Availabilities;
             await availabilitiesCollection.Indexes.CreateOneAsync(new CreateIndexModel<Availability>(
                 Builders<Availability>.IndexKeys.Ascending(av => av.AvailabilityID),
-                new CreateIndexOptions { Unique = true }));
+                new CreateIndexOptions { Unique = true, Name = "idx_availability_id" }));
             await availabilitiesCollection.Indexes.CreateOneAsync(new CreateIndexModel<Availability>(
-                Builders<Availability>.IndexKeys.Ascending(av => av.ProfessionalID)));
+                Builders<Availability>.IndexKeys.Ascending(av => av.ProfessionalID),
+                new CreateIndexOptions { Name = "idx_availability_professionalId" }));
 
             // Chats collection indexes
             var chatsCollection = _context.Chats;
             await chatsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Chat>(
                 Builders<Chat>.IndexKeys.Ascending(c => c.ChatID),
-                new CreateIndexOptions { Unique = true }));
+                new CreateIndexOptions { Unique = true, Name = "idx_chat_id" }));
             await chatsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Chat>(
-                Builders<Chat>.IndexKeys.Ascending(c => c.ClientID).Ascending(c => c.ProfessionalID)));
+                Builders<Chat>.IndexKeys.Ascending(c => c.ClientID).Ascending(c => c.ProfessionalID),
+                new CreateIndexOptions { Name = "idx_chat_client_professional" }));
 
             Console.WriteLine("All indexes created successfully");
         }
@@ -140,41 +141,7 @@ namespace ProMeet.Data
                 Console.WriteLine("Seeded initial categories");
             }
 
-            // Seed sample users if empty
-            var usersCollection = _context.Users;
-            var userCount = await usersCollection.CountDocumentsAsync(_ => true);
-            
-            if (userCount == 0)
-            {
-                var users = new[]
-                {
-                    new User 
-                    { 
-                        UserID = 1, 
-                        Name = "Admin User", 
-                        Email = "admin@prommeet.com", 
-                        Password = "admin123", // In real app, this should be hashed
-                        UserType = "Admin", 
-                        Phone = "1234567890",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    },
-                    new User 
-                    { 
-                        UserID = 2, 
-                        Name = "John Doe", 
-                        Email = "john@example.com", 
-                        Password = "password123",
-                        UserType = "Client", 
-                        Phone = "0987654321",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    }
-                };
-                
-                await usersCollection.InsertManyAsync(users);
-                Console.WriteLine("Seeded initial users");
-            }
+
 
             Console.WriteLine("Database migration completed successfully!");
         }

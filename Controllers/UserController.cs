@@ -6,7 +6,7 @@ namespace ProMeet.Controllers
 {
     public class UserController : Controller
     {
-        private static List<User> _users = new List<User>();
+        private static List<ApplicationUser> _users = new List<ApplicationUser>();
 
         public IActionResult Index()
         {
@@ -15,7 +15,7 @@ namespace ProMeet.Controllers
 
         public IActionResult Details(int id)
         {
-            var user = _users.FirstOrDefault(u => u.UserID == id);
+            var user = _users.FirstOrDefault(u => u.Id == new System.Guid());
             if (user == null) return NotFound();
             return View(user);
         }
@@ -26,38 +26,34 @@ namespace ProMeet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(User user)
+        public IActionResult Create(ApplicationUser user)
         {
-            user.UserID = _users.Count > 0 ? _users.Max(u => u.UserID) + 1 : 1;
             _users.Add(user);
             return RedirectToAction("Index");
         }
 
         public IActionResult Edit(int id)
         {
-            var user = _users.FirstOrDefault(u => u.UserID == id);
+            var user = _users.FirstOrDefault(u => u.Id == new System.Guid());
             if (user == null) return NotFound();
             return View(user);
         }
 
         [HttpPost]
-        public IActionResult Edit(User user)
+        public IActionResult Edit(ApplicationUser user)
         {
-            var existing = _users.FirstOrDefault(u => u.UserID == user.UserID);
+            var existing = _users.FirstOrDefault(u => u.Id == user.Id);
             if (existing == null) return NotFound();
             existing.Name = user.Name;
             existing.Email = user.Email;
-            existing.Password = user.Password;
             existing.City = user.City;
             existing.Country = user.Country;
-            existing.PhotoURL = user.PhotoURL;
-            existing.DateJoined = user.DateJoined;
             return RedirectToAction("Index");
         }
 
         public IActionResult Delete(int id)
         {
-            var user = _users.FirstOrDefault(u => u.UserID == id);
+            var user = _users.FirstOrDefault(u => u.Id == new System.Guid());
             if (user == null) return NotFound();
             return View(user);
         }
@@ -65,7 +61,7 @@ namespace ProMeet.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            var user = _users.FirstOrDefault(u => u.UserID == id);
+            var user = _users.FirstOrDefault(u => u.Id == new System.Guid());
             if (user != null) _users.Remove(user);
             return RedirectToAction("Index");
         }

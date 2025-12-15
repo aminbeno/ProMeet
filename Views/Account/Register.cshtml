@@ -47,6 +47,74 @@
                             </div>
 
                             <div class="form-floating mb-4">
+                                <select asp-for="UserType" class="form-select form-control-lg" id="userType" required>
+                                    <option value="" selected disabled>Select your role</option>
+                                    <option value="Client">Client</option>
+                                    <option value="Professional">Professional</option>
+                                </select>
+                                <label for="userType"><i class="bi bi-person-badge me-2"></i>I am a...</label>
+                                <span asp-validation-for="UserType" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-4" id="professionTypeContainer" style="display: none;">
+                                <input asp-for="ProfessionType" type="text" class="form-control form-control-lg" id="professionType" placeholder="e.g., Plumber, Electrician">
+                                <label for="professionType">
+                                    <i class="bi bi-tools me-2"></i>Type of Profession
+                                </label>
+                                <span asp-validation-for="ProfessionType" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating mb-4" id="organizationContainer" style="display: none;">
+                                <input asp-for="OrganizationName" type="text" class="form-control form-control-lg" id="organizationName" placeholder="Organization Name">
+                                <label for="organizationName">
+                                    <i class="bi bi-building me-2"></i>Organization Name
+                                </label>
+                                <span asp-validation-for="OrganizationName" class="text-danger"></span>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="City" type="text" class="form-control form-control-lg" id="city" placeholder="City" required>
+                                        <label for="city">
+                                            <i class="bi bi-geo-alt me-2"></i>City
+                                        </label>
+                                        <span asp-validation-for="City" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Country" type="text" class="form-control form-control-lg" id="country" placeholder="Country" required>
+                                        <label for="country">
+                                            <i class="bi bi-globe me-2"></i>Country
+                                        </label>
+                                        <span asp-validation-for="Country" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Phone" type="tel" class="form-control form-control-lg" id="phone" placeholder="Phone Number" required>
+                                        <label for="phone">
+                                            <i class="bi bi-telephone me-2"></i>Phone Number
+                                        </label>
+                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Birthday" type="date" class="form-control form-control-lg" id="birthday" placeholder="Birthday" required>
+                                        <label for="birthday">
+                                            <i class="bi bi-calendar-event me-2"></i>Birthday
+                                        </label>
+                                        <span asp-validation-for="Birthday" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-floating mb-4">
                                 <input asp-for="Email" type="email" class="form-control form-control-lg" id="email" placeholder="name@example.com" required>
                                 <label for="email">
                                     <i class="bi bi-envelope me-2"></i>Email Address
@@ -153,6 +221,22 @@
     <script>
         // Additional client-side validation
         document.addEventListener('DOMContentLoaded', function() {
+            const userTypeSelect = document.getElementById('userType');
+            const professionTypeContainer = document.getElementById('professionTypeContainer');
+            const organizationContainer = document.getElementById('organizationContainer');
+
+            if (userTypeSelect && professionTypeContainer && organizationContainer) {
+                userTypeSelect.addEventListener('change', function() {
+                    if (this.value === 'Professional') {
+                        professionTypeContainer.style.display = 'block';
+                        organizationContainer.style.display = 'block';
+                    } else {
+                        professionTypeContainer.style.display = 'none';
+                        organizationContainer.style.display = 'none';
+                    }
+                });
+            }
+
             // Custom validation for terms checkbox
             const termsCheckbox = document.getElementById('terms');
             const termsError = document.querySelector('[data-valmsg-for="Terms"]');

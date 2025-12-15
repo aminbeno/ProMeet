@@ -16,7 +16,7 @@ namespace ProMeet.Data
 
         public IMongoDatabase Database => _database;
 
-        public IMongoCollection<User> Users => _database.GetCollection<User>("Users");
+        
         public IMongoCollection<Professional> Professionals => _database.GetCollection<Professional>("Professionals");
         public IMongoCollection<Appointment> Appointments => _database.GetCollection<Appointment>("Appointments");
         public IMongoCollection<Availability> Availabilities => _database.GetCollection<Availability>("Availabilities");
@@ -24,5 +24,8 @@ namespace ProMeet.Data
         public IMongoCollection<Category> Categories => _database.GetCollection<Category>("Categories");
         public IMongoCollection<Chat> Chats => _database.GetCollection<Chat>("Chats");
         public IMongoCollection<Message> Messages => _database.GetCollection<Message>("Messages");
+        public IMongoCollection<Service> Services => _database.GetCollection<Service>("Services");
+        public IMongoCollection<Annonce> Annonces => _database.GetCollection<Annonce>("Annonces");
+        public IMongoCollection<Notification> Notifications => _database.GetCollection<Notification>("Notifications");
     }
 }

@@ -1,3 +1,6 @@
+@using Microsoft.AspNetCore.Identity
+@using ProMeet.Models
+@inject UserManager<ApplicationUser> UserManager
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,36 +28,102 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">ProMeet</a>
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="@(User.IsInRole("Professional") ? "Professional" : "Home")" asp-action="@(User.IsInRole("Professional") ? "Dashboard" : "Index")">ProMeet</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Professional" asp-action="Search">Find Professionals</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (!User.IsInRole("Professional"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Professional" asp-action="Search">Find Professionals</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                        }
+                        
+                        @if (User.IsInRole("Professional"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold text-primary" asp-area="" asp-controller="Professional" asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Professional" asp-action="ManageServices">My Services</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="Manage">Appointments</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Availability" asp-action="Manage">Availability</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Review" asp-action="List">Reviews</a>
+                            </li>
+                        }
+                        else if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Client" asp-action="Appointments">My Appointments</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav align-items-center">
-                        <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center gap-1" asp-area="" asp-controller="Account" asp-action="Login">
-                                <i class="bi bi-box-arrow-in-right"></i>
-                                <span>Login</span>
-                            </a>
-                        </li>
-                        <li class="nav-item ms-lg-2">
-                            <a class="btn btn-gradient px-3" asp-area="" asp-controller="Account" asp-action="Register">
-                                <i class="bi bi-person-plus me-1"></i>
-                                <span>Sign Up</span>
-                            </a>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item me-3">
+                                <a class="nav-link position-relative" asp-controller="Notification" asp-action="Index">
+                                    <i class="bi bi-bell fs-5"></i>
+                                    <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                        0
+                                        <span class="visually-hidden">unread messages</span>
+                                    </span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @{
+                                        var currentUser = await UserManager.GetUserAsync(User);
+                                        var profilePhoto = !string.IsNullOrEmpty(currentUser?.PhotoURL) ? currentUser.PhotoURL : "/images/avatar.png";
+                                        var displayName = currentUser?.Name ?? User.Identity.Name;
+                                    }
+                                    <img src="@profilePhoto" alt="User" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                                    <span class="ms-2">@displayName</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm">
+                                            <button type="submit" class="dropdown-item">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-1" asp-area="" asp-controller="Account" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    <span>Login</span>
+                                </a>
+                            </li>
+                            <li class="nav-item ms-lg-2">
+                                <a class="btn btn-gradient px-3" asp-area="" asp-controller="Account" asp-action="Register">
+                                    <i class="bi bi-person-plus me-1"></i>
+                                    <span>Sign Up</span>
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -109,7 +178,43 @@
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function() {
+            // Notification Badge Logic
+            function updateBadge() {
+                if ($('#notification-badge').length) {
+                    $.get('/Notification/GetUnreadCount', function(count) {
+                        if (count > 0) {
+                            $('#notification-badge').text(count).show();
+                        } else {
+                            $('#notification-badge').hide();
+                        }
+                    });
+                }
+            }
+            
+            // Initial check
+            updateBadge();
+
+            // SignalR Connection
+            var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+
+            connection.on("ReceiveNotification", function (message) {
+                // Play sound or show toast
+                // For now, just update the badge
+                updateBadge();
+                
+                // Optional: Show a toast notification
+                // alert(message); 
+            });
+
+            connection.start().catch(function (err) {
+                return console.error(err.toString());
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

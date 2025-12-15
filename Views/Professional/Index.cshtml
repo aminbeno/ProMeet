@@ -146,63 +146,170 @@
             {
                 @foreach (var professional in Model)
                 {
-                    <div class="col-md-6 col-lg-4 col-xl-3 professional-item">
-                        <div class="card professional-card-modern h-100">
-                            <div class="card-image-wrapper">
-                                <img src="@professional.User.PhotoURL" class="card-img-top" alt="@professional.User.Name">
-                                <div class="card-overlay">
-                                    <div class="overlay-content">
-                                        <button class="btn btn-light btn-sm mb-2">
-                                            <i class="bi bi-heart"></i> Save
-                                        </button>
-                                        <a href="/professional/@professional.ProfessionalID" class="btn btn-primary btn-sm">
-                                            View Profile
+                    @if (professional.Services != null && professional.Services.Any())
+                    {
+                        @foreach (var service in professional.Services)
+                        {
+                            <div class="col-md-6 col-lg-4 col-xl-3 professional-item">
+                                <div class="card professional-card-modern h-100">
+                                    <div class="card-image-wrapper">
+                                        <img src="@(professional.User?.PhotoURL ?? "https://via.placeholder.com/300x200?text=No+Image")" class="card-img-top" alt="@(professional.User?.Name ?? "N/A")">
+                                        <div class="card-overlay">
+                                            <div class="overlay-content">
+                                                <button class="btn btn-light btn-sm mb-2">
+                                                    <i class="bi bi-heart"></i> Save
+                                                </button>
+                                                <a href="/professional/@professional.ProfessionalID" class="btn btn-primary btn-sm">
+                                                    View Profile
+                                                </a>
+                                            </div>
+                                        </div>
+                                        @if (professional.Rating >= 4.5)
+                                        {
+                                            <div class="verified-badge">
+                                                <i class="bi bi-patch-check-fill text-primary"></i>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title fw-bold mb-0 text-truncate-single" title="@service.Name">@service.Name</h5>
+                                            <div class="rating-badge">
+                                                <i class="bi bi-star-fill text-warning me-1"></i>
+                                                <span class="fw-semibold">@professional.Rating.ToString("0.0")</span>
+                                            </div>
+                                        </div>
+                                        <p class="card-subtitle text-primary fw-semibold mb-2">@professional.User?.Name <span class="text-muted small">(@professional.JobTitle)</span></p>
+                                        
+                                        <!-- Added Details (Unified Style) -->
+                                        <div class="mb-3 small">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i class="bi bi-briefcase me-2 text-primary"></i>
+                                                <span class="text-muted me-1">Specialty:</span>
+                                                <span class="text-truncate">@professional.Specialty</span>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i class="bi bi-laptop me-2 text-primary"></i>
+                                                <span class="text-muted me-1">Type:</span>
+                                                <span>@professional.ConsultationType</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <p class="card-text text-muted small mb-3 text-truncate-multiline">
+                                            @(service.Description != null ? (service.Description.Length > 100 ? service.Description.Substring(0, 100) + "..." : service.Description) : "")
+                                        </p>
+                                        
+                                        <div class="professional-stats mb-3">
+                                            <div class="d-flex justify-content-between text-center">
+                                                <div>
+                                                    <i class="bi bi-calendar-check text-success"></i>
+                                                    <span class="small text-muted">Available</span>
+                                                </div>
+                                                <div>
+                                                    <i class="bi bi-geo-alt text-info"></i>
+                                                    <span class="small text-muted">@(professional.User?.City ?? "Online")</span>
+                                                </div>
+                                                <div>
+                                                    <i class="bi bi-clock-history text-primary"></i>
+                                                    <span class="small text-muted">@professional.Experience Exp.</span>
+                                                </div>
+                                                <div>
+                                                    <i class="bi bi-tag text-warning"></i>
+                                                    <span class="small text-muted fw-bold">@service.Price.ToString("C0")</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-grid">
+                                            <a href="/Appointment/Book?professionalId=@professional.Id&serviceId=@service.Id" class="btn btn-gradient btn-sm">
+                                                <i class="bi bi-calendar-plus me-1"></i>Book Service
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-md-6 col-lg-4 col-xl-3 professional-item">
+                            <div class="card professional-card-modern h-100">
+                                <div class="card-image-wrapper">
+                                    <img src="@(professional.User?.PhotoURL ?? "https://via.placeholder.com/300x200?text=No+Image")" class="card-img-top" alt="@(professional.User?.Name ?? "N/A")">
+                                    <div class="card-overlay">
+                                        <div class="overlay-content">
+                                            <button class="btn btn-light btn-sm mb-2">
+                                                <i class="bi bi-heart"></i> Save
+                                            </button>
+                                            <a href="/professional/@professional.ProfessionalID" class="btn btn-primary btn-sm">
+                                                View Profile
+                                            </a>
+                                        </div>
+                                    </div>
+                                    @if (professional.Rating >= 4.5)
+                                    {
+                                        <div class="verified-badge">
+                                            <i class="bi bi-patch-check-fill text-primary"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title fw-bold mb-0 text-truncate-single">@professional.JobTitle</h5>
+                                        <div class="rating-badge">
+                                            <i class="bi bi-star-fill text-warning me-1"></i>
+                                            <span class="fw-semibold">@professional.Rating.ToString("0.0")</span>
+                                        </div>
+                                    </div>
+                                    <p class="card-subtitle text-primary fw-semibold mb-2">@professional.User?.Name</p>
+                                    <p class="card-text text-muted small mb-3 text-truncate-multiline">@(professional.Bio != null ? (professional.Bio.Length > 100 ? professional.Bio.Substring(0, 100) + "..." : professional.Bio) : "")</p>
+                                    
+                                    <!-- Added Details -->
+                                    <div class="mb-3 small">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <i class="bi bi-briefcase me-2 text-primary"></i>
+                                            <span class="text-muted me-1">Specialty:</span>
+                                            <span class="text-truncate">@professional.Specialty</span>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-1">
+                                            <i class="bi bi-laptop me-2 text-primary"></i>
+                                            <span class="text-muted me-1">Type:</span>
+                                            <span>@professional.ConsultationType</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-clock me-2 text-primary"></i>
+                                            <span class="text-muted me-1">Exp:</span>
+                                            <span>@professional.Experience</span>
+                                        </div>
+                                    </div>
+                                    <!-- End Added Details -->
+
+                                    <div class="professional-stats mb-3">
+                                        <div class="d-flex justify-content-between text-center">
+                                            <div>
+                                                <i class="bi bi-calendar-check text-success"></i>
+                                                <span class="small text-muted">Available</span>
+                                            </div>
+                                            <div>
+                                                <i class="bi bi-geo-alt text-info"></i>
+                                                <span class="small text-muted">@(professional.User?.City ?? "Online")</span>
+                                            </div>
+                                            <div>
+                                                <i class="bi bi-tag text-warning"></i>
+                                                <span class="small text-muted fw-bold">@professional.Price.ToString("C0")</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid">
+                                        <a href="/Appointment/Book?professionalId=@professional.Id" class="btn btn-gradient btn-sm">
+                                            <i class="bi bi-calendar-plus me-1"></i>Book Service
                                         </a>
                                     </div>
                                 </div>
-                                @if (professional.Rating >= 4.5)
-                                {
-                                    <div class="verified-badge">
-                                        <i class="bi bi-patch-check-fill text-primary"></i>
-                                    </div>
-                                }
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h5 class="card-title fw-bold mb-0 text-truncate-single">@professional.User.Name</h5>
-                                    <div class="rating-badge">
-                                        <i class="bi bi-star-fill text-warning me-1"></i>
-                                        <span class="fw-semibold">@professional.Rating.ToString("0.0")</span>
-                                    </div>
-                                </div>
-                                <p class="card-subtitle text-primary fw-semibold mb-2">@professional.JobTitle</p>
-                                <p class="card-text text-muted small mb-3 text-truncate-multiline">@professional.Bio.Substring(0, Math.Min(professional.Bio.Length, 120))...</p>
-                                
-                                <div class="professional-stats mb-3">
-                                    <div class="d-flex justify-content-between text-center">
-                                        <div>
-                                            <i class="bi bi-calendar-check text-success"></i>
-                                            <span class="small text-muted">Available</span>
-                                        </div>
-                                        <div>
-                                            <i class="bi bi-geo-alt text-info"></i>
-                                            <span class="small text-muted">@(professional.User.City ?? "Online")</span>
-                                        </div>
-                                        <div>
-                                            <i class="bi bi-currency-dollar text-warning"></i>
-                                            <span class="small text-muted">$@professional.Price</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="d-grid">
-                                    <a href="/book/@professional.ProfessionalID" class="btn btn-gradient btn-sm">
-                                        <i class="bi bi-calendar-plus me-1"></i>Book Now
-                                    </a>
-                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 }
             }
             else
@@ -429,3 +536,5 @@
         document.getElementById('professionalsGrid').classList.add('list-view');
     });
 </script>
+
+

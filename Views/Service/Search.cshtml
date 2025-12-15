@@ -1,0 +1,51 @@
+@model IEnumerable<ProMeet.Models.Service>
+
+@{ 
+    ViewData["Title"] = "Search Services";
+}
+
+<h2>Search Services</h2>
+
+<form asp-action="Search" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name or description: <input type="text" name="query" value="@ViewData["currentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" />
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                <a asp-controller="Professional" asp-action="Details" asp-route-id="@item.ProfessionalID">View Professional</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -65,7 +65,7 @@
                                     <div class="detail-label">Service</div>
                                     <div class="detail-value">
                                         <i class="bi bi-tag me-2"></i>
-                                        @Model.Professional?.Specialty
+                                        @(Model.ServiceName ?? Model.Professional?.Specialty ?? "Professional Service")
                                     </div>
                                     <div class="detail-subvalue">
                                         <span class="service-category">@Model.Professional?.Category?.Name</span>
@@ -87,8 +87,8 @@
                                 <div class="detail-item">
                                     <div class="detail-label">Price</div>
                                     <div class="detail-value price">
-                                        <i class="bi bi-currency-dollar me-2"></i>
-                                        $@Model.Professional?.Price
+                                        <i class="bi bi-tag me-2"></i>
+                                        @Model.Price.ToString("N0") DH
                                     </div>
                                 </div>
                             </div>

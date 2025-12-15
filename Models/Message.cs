@@ -38,6 +38,6 @@ namespace ProMeet.Models
         
         // Nested document for sender information
         [BsonElement("sender")]
-        public User? Sender { get; set; }
+        public ApplicationUser? Sender { get; set; }
     }
 }

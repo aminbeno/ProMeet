@@ -139,69 +139,154 @@
                     <div class="row">
                         @foreach (var professional in Model.Professionals)
                         {
-                            <div class="col-md-6 col-xl-4 mb-4">
-                                <div class="card professional-card h-100 border-0 shadow-sm" style="border-radius: 20px;">
-                                    <div class="card-body p-4">
-                                        <div class="text-center mb-3">
-                                            @if (!string.IsNullOrEmpty(professional.User.PhotoURL))
-                                            {
-                                                <img src="@professional.User.PhotoURL" alt="@professional.User.Name" 
-                                                     class="professional-photo mb-3">
-                                            }
-                                            else
-                                            {
-                                                <div class="professional-avatar mb-3">
-                                                    <i class="bi bi-person-circle"></i>
-                                                </div>
-                                            }
-                                            <h5 class="fw-bold mb-1">@professional.User.Name</h5>
-                                            <p class="text-muted mb-2">@professional.JobTitle</p>
-                                        </div>
-                                        
-                                        <div class="professional-details mb-3">
-                                            <p class="mb-2">
-                                                <i class="bi bi-briefcase me-2 text-primary"></i>
-                                                @professional.Specialty
-                                            </p>
-                                            <p class="mb-2">
-                                                <i class="bi bi-geo-alt me-2 text-primary"></i>
-                                                @professional.User.City
-                                            </p>
-                                            <p class="mb-2">
-                                                <i class="bi bi-clock me-2 text-primary"></i>
-                                                @professional.Experience experience
-                                            </p>
-                                        </div>
-                                        
-                                        <div class="professional-rating mb-3">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="rating-stars">
-                                                    @for (int i = 1; i <= 5; i++)
+                            @if (professional.Services != null && professional.Services.Any())
+                            {
+                                @foreach (var service in professional.Services)
+                                {
+                                    <div class="col-md-6 col-xl-4 mb-4">
+                                        <div class="card professional-card h-100 border-0 shadow-sm" style="border-radius: 20px;">
+                                            <div class="card-body p-4">
+                                                <div class="text-center mb-3">
+                                                    @if (!string.IsNullOrEmpty(professional.User?.PhotoURL))
                                                     {
-                                                        <i class="bi bi-star@(i <= professional.Rating ? "-fill text-warning" : " text-muted")"></i>
+                                                        <img src="@(professional.User?.PhotoURL)" alt="@(professional.User?.Name)" 
+                                                             class="professional-photo mb-3">
                                                     }
-                                                    <span class="ms-2 text-muted">@professional.Rating.ToString("F1")</span>
+                                                    else
+                                                    {
+                                                        <div class="professional-avatar mb-3">
+                                                            <i class="bi bi-person-circle"></i>
+                                                        </div>
+                                                    }
+                                                    <h5 class="fw-bold mb-1" title="@service.Name">@service.Name</h5>
+                                                    <p class="text-muted mb-2">@professional.User?.Name <span class="small">(@professional.JobTitle)</span></p>
                                                 </div>
-                                                <div class="price-tag">
-                                                    <span class="fw-bold text-primary">$@professional.Price</span>
-                                                    <small class="text-muted">/hr</small>
+                                                
+                                                <div class="professional-details mb-3">
+                                                    <p class="mb-2 text-muted small text-truncate-multiline" style="min-height: 3em;">
+                                                        @(service.Description != null ? (service.Description.Length > 100 ? service.Description.Substring(0, 100) + "..." : service.Description) : "")
+                                                    </p>
+                                                    <p class="mb-2 small">
+                                                        <i class="bi bi-briefcase me-2 text-primary"></i>
+                                                        <span class="text-muted">Specialty:</span> @professional.Specialty
+                                                    </p>
+                                                    <p class="mb-2 small">
+                                                        <i class="bi bi-laptop me-2 text-primary"></i>
+                                                        <span class="text-muted">Consultation:</span> @professional.ConsultationType
+                                                    </p>
+                                                    <p class="mb-2 small">
+                                                        <i class="bi bi-clock me-2 text-primary"></i>
+                                                        <span class="text-muted">Experience:</span> @professional.Experience
+                                                    </p>
+                                                    <p class="mb-2">
+                                                        <i class="bi bi-geo-alt me-2 text-primary"></i>
+                                                        @(professional.User?.City ?? "Online")
+                                                    </p>
+                                                </div>
+                                                
+                                                <div class="professional-rating mb-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div class="rating-stars">
+                                                            @for (int i = 1; i <= 5; i++)
+                                                            {
+                                                                <i class="bi bi-star@(i <= professional.Rating ? "-fill text-warning" : " text-muted")"></i>
+                                                            }
+                                                            <span class="ms-2 text-muted">@professional.Rating.ToString("F1")</span>
+                                                        </div>
+                                                        <div class="price-tag">
+                                                            <span class="fw-bold text-primary">@service.Price.ToString("C0")</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="professional-actions mt-3">
+                                                    <a asp-controller="Professional" asp-action="Details" asp-route-id="@professional.Id" 
+                                                       class="btn btn-gradient w-100 mb-2">
+                                                        <i class="bi bi-eye me-1"></i> View Profile
+                                                    </a>
+                                                    <a asp-controller="Appointment" asp-action="Book" asp-route-professionalId="@professional.Id" asp-route-serviceId="@service.Id"
+                                                       class="btn btn-outline-primary w-100 mb-2">
+                                                        <i class="bi bi-calendar-plus me-1"></i> Book Service
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                        <div class="professional-actions">
-                                            <a href="/Professional/Details/@professional.ProfessionalID" 
-                                               class="btn btn-gradient w-100 mb-2">
-                                                <i class="bi bi-eye me-1"></i> View Profile
-                                            </a>
-                                            <a href="/Appointment/Book/@professional.ProfessionalID" 
-                                               class="btn btn-outline-primary w-100">
-                                                <i class="bi bi-calendar-plus me-1"></i> Book Now
-                                            </a>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-md-6 col-xl-4 mb-4">
+                                    <div class="card professional-card h-100 border-0 shadow-sm" style="border-radius: 20px;">
+                                        <div class="card-body p-4">
+                                            <div class="text-center mb-3">
+                                                @if (!string.IsNullOrEmpty(professional.User?.PhotoURL))
+                                                {
+                                                    <img src="@(professional.User?.PhotoURL)" alt="@(professional.User?.Name)" 
+                                                         class="professional-photo mb-3">
+                                                }
+                                                else
+                                                {
+                                                    <div class="professional-avatar mb-3">
+                                                        <i class="bi bi-person-circle"></i>
+                                                    </div>
+                                                }
+                                                <h5 class="fw-bold mb-1">@(professional.User?.Name ?? "Professional")</h5>
+                                                <p class="text-muted mb-2">@professional.JobTitle</p>
+                                            </div>
+                                            
+                                            <div class="professional-details mb-3">
+                                                <p class="mb-2">
+                                                    <i class="bi bi-briefcase me-2 text-primary"></i>
+                                                    @professional.Specialty
+                                                </p>
+                                                <p class="mb-2">
+                                                    <i class="bi bi-laptop me-2 text-primary"></i>
+                                                    @professional.ConsultationType
+                                                </p>
+                                                <p class="mb-2">
+                                                    <i class="bi bi-geo-alt me-2 text-primary"></i>
+                                                    @(professional.User?.City ?? "")
+                                                </p>
+                                                <p class="mb-2">
+                                                    <i class="bi bi-clock me-2 text-primary"></i>
+                                                    @professional.Experience experience
+                                                </p>
+                                            </div>
+                                            
+                                            <div class="professional-rating mb-3">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="rating-stars">
+                                                        @for (int i = 1; i <= 5; i++)
+                                                        {
+                                                            <i class="bi bi-star@(i <= professional.Rating ? "-fill text-warning" : " text-muted")"></i>
+                                                        }
+                                                        <span class="ms-2 text-muted">@professional.Rating.ToString("F1")</span>
+                                                    </div>
+                                                    <div class="price-tag">
+                                                        <span class="fw-bold text-primary">@professional.Price.ToString("C0")</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="professional-actions mt-3">
+                                                <a asp-controller="Professional" asp-action="Details" asp-route-id="@professional.Id" 
+                                                   class="btn btn-gradient w-100 mb-2">
+                                                    <i class="bi bi-eye me-1"></i> View Profile
+                                                </a>
+                                                <a asp-controller="Appointment" asp-action="Book" asp-route-professionalId="@professional.Id" 
+                                                   class="btn btn-outline-primary w-100 mb-2">
+                                                    <i class="bi bi-calendar-plus me-1"></i> Book Consultation
+                                                </a>
+                                                <a asp-controller="Review" asp-action="Create" asp-route-professionalId="@professional.Id" 
+                                                   class="btn btn-outline-secondary w-100">
+                                                    <i class="bi bi-star me-1"></i> Leave Review
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         }
                     </div>
                 }

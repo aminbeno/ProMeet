@@ -1,0 +1,88 @@
+@model List<ProMeet.Models.Notification>
+
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Notifications</h2>
+        @if (Model.Any(n => !n.IsRead))
+        {
+            <button id="markAllRead" class="btn btn-outline-primary btn-sm">Mark all as read</button>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You have no notifications.
+        </div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var notification in Model)
+            {
+                <div class="list-group-item list-group-item-action" id="notification-@notification.Id">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1 @(notification.IsRead ? "" : "fw-bold text-primary")">
+                            @if (!notification.IsRead)
+                            {
+                                <i class="bi bi-circle-fill text-primary me-2" style="font-size: 0.5rem; vertical-align: middle;"></i>
+                            }
+                            @notification.Title
+                        </h5>
+                        <small class="text-muted">@notification.CreatedAt.ToLocalTime().ToString("g")</small>
+                    </div>
+                    <p class="mb-1">@notification.Message</p>
+                    @if (!notification.IsRead)
+                    {
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-primary mark-read-btn" data-id="@notification.Id">Mark as read</button>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.mark-read-btn').click(function (e) {
+                e.preventDefault();
+                var btn = $(this);
+                var id = btn.data('id');
+                
+                $.post('/Notification/MarkAsRead', { id: id }, function () {
+                    // Update UI
+                    var item = btn.closest('.list-group-item');
+                    item.find('h5').removeClass('fw-bold text-primary');
+                    item.find('.bi-circle-fill').remove();
+                    btn.parent().remove();
+                    updateNotificationBadge();
+                });
+            });
+
+            $('#markAllRead').click(function () {
+                $.post('/Notification/MarkAllAsRead', function () {
+                    location.reload();
+                });
+            });
+
+            function updateNotificationBadge() {
+                 $.get('/Notification/GetUnreadCount', function (count) {
+                    var badge = $('#notification-badge');
+                    if (count > 0) {
+                        badge.text(count);
+                        badge.show();
+                    } else {
+                        badge.hide();
+                    }
+                });
+            }
+        });
+    </script>
+}

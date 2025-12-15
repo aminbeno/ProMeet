@@ -13,10 +13,13 @@ namespace ProMeet.Models
         public int AvailabilityID { get; set; }
         
         [BsonElement("professionalId")]
-        public int ProfessionalID { get; set; }
+        public string ProfessionalID { get; set; }
         
         [BsonElement("dayOfWeek")]
         public int DayOfWeek { get; set; }
+
+        [BsonElement("date")]
+        public DateTime? Date { get; set; }
         
         [BsonElement("startTime")]
         public TimeSpan StartTime { get; set; }

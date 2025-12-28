@@ -13,9 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ProMeet.Controllers
 {
-    /// <summary>
     /// Manages appointment booking, details, and listing.
-    /// </summary>
     public class AppointmentController : Controller
     {
         private readonly MongoDbContext _context;
@@ -30,9 +28,7 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Appointment/Index
-        /// <summary>
         /// Main entry point for appointments. Currently redirects to Client appointments view.
-        /// </summary>
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -43,10 +39,8 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Appointment/Details/{id}
-        /// <summary>
         /// Displays details of a specific appointment.
         /// Supports looking up by both legacy Integer ID and MongoDB ObjectId string.
-        /// </summary>
         /// <param name="id">Appointment ID (int or string).</param>
         [HttpGet]
         public async Task<IActionResult> Details(string id)
@@ -73,10 +67,6 @@ namespace ProMeet.Controllers
                 appointment.Professional = await _context.Professionals.Find(p => p.Id == appointment.ProfessionalID).FirstOrDefaultAsync();
             }
 
-            if (appointment.Professional != null && appointment.Professional.User == null)
-            {
-                // Attempt to recover user if possible, or handle gracefully
-            }
             // If User is present but incomplete (e.g. just ID), refresh it
              if (appointment.Professional != null && appointment.Professional.User != null)
             {

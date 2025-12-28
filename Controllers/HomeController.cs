@@ -69,30 +69,6 @@ namespace ProMeet.Controllers
                 if (!string.IsNullOrEmpty(review.ProfessionalID))
                 {
                     review.Professional = await _context.Professionals.Find(p => p.Id == review.ProfessionalID).FirstOrDefaultAsync();
-                    if (review.Professional != null && review.Professional.User == null)
-                    {
-                        // Try to populate User for the Professional if needed for name display
-                        if (review.Professional.User == null) 
-                        {
-                             // We might need to fetch the user if it's not embedded or if we only have the ID
-                             // But Professional model has embedded User usually.
-                             // Let's assume it's embedded or we can't easily get it without a user ID link in Professional
-                             // Actually Professional has User embedded.
-                        }
-                        if (review.Professional.User != null)
-                        {
-                             // Ensure user details are loaded if they are references? 
-                             // Usually Professional.User is an embedded object copy.
-                        }
-                    }
-                    
-                    // If Professional.User is null but we need the name, we might be stuck if we don't have the User ID.
-                    // But Professional usually has User embedded.
-                    // However, let's verify if we need to fetch the user from Identity if the embedded one is stale or missing.
-                    if (review.Professional != null && review.Professional.User != null)
-                    {
-                         // No extra fetch needed usually if embedded
-                    }
                 }
             }
 

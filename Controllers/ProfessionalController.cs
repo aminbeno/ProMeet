@@ -12,9 +12,7 @@ using System.Collections.Generic;
 
 namespace ProMeet.Controllers
 {
-    /// <summary>
     /// Manages professional-specific functionalities: Dashboard, Profile Management, Services, and Public Search.
-    /// </summary>
     [Authorize(Roles = "Professional")]
     public class ProfessionalController : Controller
     {
@@ -27,10 +25,8 @@ namespace ProMeet.Controllers
             _userManager = userManager;
         }
 
-        // GET: /Professional/Dashboard
         /// <summary>
         /// Displays the professional's dashboard with key metrics (upcoming appointments, stats, recent activity).
-        /// </summary>
         public async Task<IActionResult> Dashboard()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -94,9 +90,7 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Professional/Index
-        /// <summary>
         /// Public list of all professionals. Accessible anonymously.
-        /// </summary>
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
@@ -119,9 +113,7 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Professional/Details/{id}
-        /// <summary>
         /// Public profile details of a specific professional. Accessible anonymously.
-        /// </summary>
         /// <param name="id">Professional ID (ObjectId string).</param>
         [AllowAnonymous]
         public async Task<IActionResult> Details(string id)
@@ -180,9 +172,7 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Professional/Appointments
-        /// <summary>
         /// Lists all appointments for the logged-in professional.
-        /// </summary>
         public async Task<IActionResult> Appointments()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -211,9 +201,7 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Professional/Create
-        /// <summary>
         /// Displays the form to create a new professional profile (mostly for internal use or admin).
-        /// </summary>
         public IActionResult Create()
         {
             return View();
@@ -228,9 +216,7 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Professional/Edit/{id}
-        /// <summary>
         /// Displays the form to edit a professional profile by ID (Admin/Self).
-        /// </summary>
         public async Task<IActionResult> Edit(string id)
         {
             var professional = await _context.Professionals.Find(p => p.Id == id).FirstOrDefaultAsync();
@@ -239,9 +225,7 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Professional/ManageProfile
-        /// <summary>
         /// Displays the profile management page for the currently logged-in professional.
-        /// </summary>
         public async Task<IActionResult> ManageProfile()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -263,9 +247,7 @@ namespace ProMeet.Controllers
         }
 
         // POST: /Professional/ManageProfile
-        /// <summary>
         /// Updates the professional's profile and the embedded/linked user information.
-        /// </summary>
         [HttpPost]
         public async Task<IActionResult> ManageProfile(Professional professional)
         {
@@ -336,9 +318,7 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Professional/ManageServices
-        /// <summary>
         /// Lists services offered by the logged-in professional.
-        /// </summary>
         public async Task<IActionResult> ManageServices()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -422,10 +402,8 @@ namespace ProMeet.Controllers
         }
 
         // GET: /Professional/Search
-        /// <summary>
         /// Advanced search for professionals with filtering (Query, Category, City, Price, Sort).
         /// Accessible anonymously.
-        /// </summary>
         [AllowAnonymous]
         public async Task<IActionResult> Search(string? query, string? category, string? city, string? sortBy, decimal? maxPrice)
         {
@@ -500,6 +478,21 @@ namespace ProMeet.Controllers
 
             var finalProfessionals = filteredList.ToList();
 
+            // Extract dynamic filter options from all professionals (not just filtered ones)
+            var allCategories = professionals
+                .Where(p => !string.IsNullOrEmpty(p.Specialty))
+                .Select(p => p.Specialty!)
+                .Distinct()
+                .OrderBy(s => s)
+                .ToList();
+
+            var allCities = professionals
+                .Where(p => p.User != null && !string.IsNullOrEmpty(p.User.City))
+                .Select(p => p.User!.City!)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+
             var viewModel = new ProfessionalSearchViewModel
             {
                 Professionals = finalProfessionals,
@@ -508,16 +501,16 @@ namespace ProMeet.Controllers
                 SelectedCity = city,
                 SelectedSortBy = sortBy,
                 MaxPrice = maxPrice,
-                TotalResults = finalProfessionals.Count
+                TotalResults = finalProfessionals.Count,
+                Categories = allCategories,
+                Cities = allCities
             };
 
             return View(viewModel);
         }
     }
 
-    /// <summary>
     /// ViewModel for the Professional Search results and filter options.
-    /// </summary>
     public class ProfessionalSearchViewModel
     {
         public List<Professional> Professionals { get; set; } = new List<Professional>();
@@ -529,16 +522,9 @@ namespace ProMeet.Controllers
         public int TotalResults { get; set; }
         
         // Filter options for the view
-        public List<string> Categories { get; set; } = new List<string> 
-        { 
-            "Web Development", "Machine Learning", "Data Science", "Mobile Development", 
-            "UI/UX Design", "DevOps", "Cybersecurity", "Database Administration" 
-        };
+        public List<string> Categories { get; set; } = new List<string>();
         
-        public List<string> Cities { get; set; } = new List<string> 
-        { 
-            "New York", "San Francisco", "Los Angeles", "Chicago", "Boston", "Seattle", "Austin" 
-        };
+        public List<string> Cities { get; set; } = new List<string>();
         
         public List<string> SortOptions { get; set; } = new List<string> 
         { 

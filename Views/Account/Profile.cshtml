@@ -10,9 +10,17 @@
 <div class="container-xl px-4 mt-4">
     <!-- Account page navigation-->
     <nav class="nav nav-borders">
-        <a class="nav-link active ms-0" href="/Account/Profile">Profile</a>
+        @if (Model.UserType == "Professional")
+        {
+            <a class="nav-link" href="/Professional/ManageProfile">Profile</a>
+            <a class="nav-link" href="/Professional/ManageServices">Services</a>
+        }
+        else
+        {
+            <a class="nav-link active ms-0" href="/Account/Profile">Profile</a>
+        }
         <a class="nav-link" href="/Account/Security">Security</a>
-        <a class="nav-link" href="/Account/Notifications">Notifications</a>
+        <a class="nav-link" href="/Notification/Index">Notifications</a>
     </nav>
     <hr class="mt-0 mb-4">
     <div class="row">

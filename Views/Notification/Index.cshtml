@@ -4,7 +4,23 @@
     ViewData["Title"] = "Notifications";
 }
 
-<div class="container mt-4">
+<div class="container-xl px-4 mt-4">
+    <!-- Account page navigation-->
+    <nav class="nav nav-borders">
+        @if (User.IsInRole("Professional"))
+        {
+            <a class="nav-link" href="/Professional/ManageProfile">Profile</a>
+            <a class="nav-link" href="/Professional/ManageServices">Services</a>
+        }
+        else
+        {
+            <a class="nav-link" href="/Account/Profile">Profile</a>
+        }
+        <a class="nav-link" href="/Account/Security">Security</a>
+        <a class="nav-link active ms-0" href="/Notification/Index">Notifications</a>
+    </nav>
+    <hr class="mt-0 mb-4">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Notifications</h2>
         @if (Model.Any(n => !n.IsRead))

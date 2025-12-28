@@ -75,7 +75,7 @@
                             
                             <!-- Price Range -->
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">Max Price ($)</label>
+                                <label class="form-label fw-semibold">Max Price (DH)</label>
                                 <input type="number" class="form-control" name="maxPrice" 
                                        placeholder="Maximum price" value="@Model.MaxPrice">
                             </div>
@@ -194,8 +194,8 @@
                                                             <span class="ms-2 text-muted">@professional.Rating.ToString("F1")</span>
                                                         </div>
                                                         <div class="price-tag">
-                                                            <span class="fw-bold text-primary">@service.Price.ToString("C0")</span>
-                                                        </div>
+                                                        <span class="fw-bold text-primary">@service.Price.ToString("0.##") DH</span>
+                                                    </div>
                                                     </div>
                                                 </div>
                                                 
@@ -264,7 +264,7 @@
                                                         <span class="ms-2 text-muted">@professional.Rating.ToString("F1")</span>
                                                     </div>
                                                     <div class="price-tag">
-                                                        <span class="fw-bold text-primary">@professional.Price.ToString("C0")</span>
+                                                        <span class="fw-bold text-primary">@professional.Price.ToString("0.##") DH</span>
                                                     </div>
                                                 </div>
                                             </div>

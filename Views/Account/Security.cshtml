@@ -1,0 +1,61 @@
+@model ProMeet.ViewModels.ChangePasswordViewModel
+@{
+    ViewData["Title"] = "Security";
+}
+
+<div class="container-xl px-4 mt-4">
+    <!-- Account page navigation-->
+    <nav class="nav nav-borders">
+        @if (User.IsInRole("Professional"))
+        {
+            <a class="nav-link" href="/Professional/ManageProfile">Profile</a>
+            <a class="nav-link" href="/Professional/ManageServices">Services</a>
+        }
+        else
+        {
+            <a class="nav-link" href="/Account/Profile">Profile</a>
+        }
+        <a class="nav-link active ms-0" href="/Account/Security">Security</a>
+        <a class="nav-link" href="/Notification/Index">Notifications</a>
+    </nav>
+    <hr class="mt-0 mb-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Change password card-->
+            <div class="card mb-4">
+                <div class="card-header">Change Password</div>
+                <div class="card-body">
+                    @if (TempData["StatusMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["StatusMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    <form asp-action="Security" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <!-- Form Group (current password)-->
+                        <div class="mb-3">
+                            <label class="small mb-1" asp-for="CurrentPassword">Current Password</label>
+                            <input class="form-control" asp-for="CurrentPassword" type="password" placeholder="Enter current password">
+                            <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                        </div>
+                        <!-- Form Group (new password)-->
+                        <div class="mb-3">
+                            <label class="small mb-1" asp-for="NewPassword">New Password</label>
+                            <input class="form-control" asp-for="NewPassword" type="password" placeholder="Enter new password">
+                            <span asp-validation-for="NewPassword" class="text-danger"></span>
+                        </div>
+                        <!-- Form Group (confirm password)-->
+                        <div class="mb-3">
+                            <label class="small mb-1" asp-for="ConfirmPassword">Confirm Password</label>
+                            <input class="form-control" asp-for="ConfirmPassword" type="password" placeholder="Confirm new password">
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -108,15 +108,6 @@ namespace ProMeet.Data
                 Builders<Availability>.IndexKeys.Ascending(av => av.ProfessionalID),
                 new CreateIndexOptions { Name = "idx_availability_professionalId" }));
 
-            // Chats collection indexes
-            var chatsCollection = _context.Chats;
-            await chatsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Chat>(
-                Builders<Chat>.IndexKeys.Ascending(c => c.ChatID),
-                new CreateIndexOptions { Unique = true, Name = "idx_chat_id" }));
-            await chatsCollection.Indexes.CreateOneAsync(new CreateIndexModel<Chat>(
-                Builders<Chat>.IndexKeys.Ascending(c => c.ClientID).Ascending(c => c.ProfessionalID),
-                new CreateIndexOptions { Name = "idx_chat_client_professional" }));
-
             Console.WriteLine("All indexes created successfully");
         }
 

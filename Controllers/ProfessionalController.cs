@@ -7,9 +7,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using ProMeet.ViewModels;
+using System;
+using System.Collections.Generic;
 
 namespace ProMeet.Controllers
 {
+    /// <summary>
+    /// Manages professional-specific functionalities: Dashboard, Profile Management, Services, and Public Search.
+    /// </summary>
     [Authorize(Roles = "Professional")]
     public class ProfessionalController : Controller
     {
@@ -22,6 +27,10 @@ namespace ProMeet.Controllers
             _userManager = userManager;
         }
 
+        // GET: /Professional/Dashboard
+        /// <summary>
+        /// Displays the professional's dashboard with key metrics (upcoming appointments, stats, recent activity).
+        /// </summary>
         public async Task<IActionResult> Dashboard()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -84,7 +93,10 @@ namespace ProMeet.Controllers
             return View(viewModel);
         }
 
-
+        // GET: /Professional/Index
+        /// <summary>
+        /// Public list of all professionals. Accessible anonymously.
+        /// </summary>
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
@@ -106,6 +118,11 @@ namespace ProMeet.Controllers
             return View(professionals);
         }
 
+        // GET: /Professional/Details/{id}
+        /// <summary>
+        /// Public profile details of a specific professional. Accessible anonymously.
+        /// </summary>
+        /// <param name="id">Professional ID (ObjectId string).</param>
         [AllowAnonymous]
         public async Task<IActionResult> Details(string id)
         {
@@ -162,6 +179,10 @@ namespace ProMeet.Controllers
             return View(professional);
         }
 
+        // GET: /Professional/Appointments
+        /// <summary>
+        /// Lists all appointments for the logged-in professional.
+        /// </summary>
         public async Task<IActionResult> Appointments()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -189,11 +210,16 @@ namespace ProMeet.Controllers
             return View(appointments);
         }
 
+        // GET: /Professional/Create
+        /// <summary>
+        /// Displays the form to create a new professional profile (mostly for internal use or admin).
+        /// </summary>
         public IActionResult Create()
         {
             return View();
         }
 
+        // POST: /Professional/Create
         [HttpPost]
         public async Task<IActionResult> Create(Professional professional)
         {
@@ -201,6 +227,10 @@ namespace ProMeet.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: /Professional/Edit/{id}
+        /// <summary>
+        /// Displays the form to edit a professional profile by ID (Admin/Self).
+        /// </summary>
         public async Task<IActionResult> Edit(string id)
         {
             var professional = await _context.Professionals.Find(p => p.Id == id).FirstOrDefaultAsync();
@@ -208,6 +238,10 @@ namespace ProMeet.Controllers
             return View(professional);
         }
 
+        // GET: /Professional/ManageProfile
+        /// <summary>
+        /// Displays the profile management page for the currently logged-in professional.
+        /// </summary>
         public async Task<IActionResult> ManageProfile()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -228,6 +262,10 @@ namespace ProMeet.Controllers
             return View(professional);
         }
 
+        // POST: /Professional/ManageProfile
+        /// <summary>
+        /// Updates the professional's profile and the embedded/linked user information.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> ManageProfile(Professional professional)
         {
@@ -242,6 +280,7 @@ namespace ProMeet.Controllers
             // Update Professional fields
             existingProfessional.Specialty = professional.Specialty;
             existingProfessional.Experience = professional.Experience;
+            existingProfessional.Price = professional.Price;
             
             // Update embedded User fields if User is not null
             if (professional.User != null && existingProfessional.User != null)
@@ -271,6 +310,7 @@ namespace ProMeet.Controllers
             return RedirectToAction("ManageProfile");
         }
 
+        // POST: /Professional/Edit
         [HttpPost]
         public async Task<IActionResult> Edit(Professional professional)
         {
@@ -279,6 +319,7 @@ namespace ProMeet.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: /Professional/Delete/{id}
         public async Task<IActionResult> Delete(string id)
         {
             var professional = await _context.Professionals.Find(p => p.Id == id).FirstOrDefaultAsync();
@@ -286,6 +327,7 @@ namespace ProMeet.Controllers
             return View(professional);
         }
 
+        // POST: /Professional/Delete/{id}
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
@@ -293,6 +335,10 @@ namespace ProMeet.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: /Professional/ManageServices
+        /// <summary>
+        /// Lists services offered by the logged-in professional.
+        /// </summary>
         public async Task<IActionResult> ManageServices()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -305,14 +351,21 @@ namespace ProMeet.Controllers
             return View(services);
         }
 
+        // GET: /Professional/CreateService
         public IActionResult CreateService()
         {
             return View();
         }
 
+        // POST: /Professional/CreateService
         [HttpPost]
         public async Task<IActionResult> CreateService(Service service)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(service);
+            }
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
@@ -327,6 +380,7 @@ namespace ProMeet.Controllers
             return RedirectToAction("ManageServices");
         }
 
+        // GET: /Professional/EditService/{id}
         public async Task<IActionResult> EditService(int id)
         {
             var service = await _context.Services.Find(s => s.ServiceID == id).FirstOrDefaultAsync();
@@ -334,6 +388,7 @@ namespace ProMeet.Controllers
             return View(service);
         }
 
+        // POST: /Professional/EditService
         [HttpPost]
         public async Task<IActionResult> EditService(Service service)
         {
@@ -342,6 +397,7 @@ namespace ProMeet.Controllers
             return RedirectToAction("ManageServices");
         }
 
+        // GET: /Professional/ServiceDetails/{id}
         public async Task<IActionResult> ServiceDetails(int id)
         {
             var service = await _context.Services.Find(s => s.ServiceID == id).FirstOrDefaultAsync();
@@ -349,6 +405,7 @@ namespace ProMeet.Controllers
             return View(service);
         }
 
+        // GET: /Professional/DeleteService/{id}
         public async Task<IActionResult> DeleteService(int id)
         {
             var service = await _context.Services.Find(s => s.ServiceID == id).FirstOrDefaultAsync();
@@ -356,6 +413,7 @@ namespace ProMeet.Controllers
             return View(service);
         }
 
+        // POST: /Professional/DeleteService/{id}
         [HttpPost, ActionName("DeleteService")]
         public async Task<IActionResult> DeleteServiceConfirmed(int id)
         {
@@ -363,11 +421,13 @@ namespace ProMeet.Controllers
             return RedirectToAction("ManageServices");
         }
 
-
-
-        [AllowAnonymous]
         // GET: /Professional/Search
-        public async Task<IActionResult> Search(string? query, string? category, string? city, string? sortBy, double? maxPrice)
+        /// <summary>
+        /// Advanced search for professionals with filtering (Query, Category, City, Price, Sort).
+        /// Accessible anonymously.
+        /// </summary>
+        [AllowAnonymous]
+        public async Task<IActionResult> Search(string? query, string? category, string? city, string? sortBy, decimal? maxPrice)
         {
             // 1. Fetch all professionals
             var professionals = await _context.Professionals.Find(_ => true).ToListAsync();
@@ -455,7 +515,9 @@ namespace ProMeet.Controllers
         }
     }
 
-    // View Model for Professional Search Results
+    /// <summary>
+    /// ViewModel for the Professional Search results and filter options.
+    /// </summary>
     public class ProfessionalSearchViewModel
     {
         public List<Professional> Professionals { get; set; } = new List<Professional>();
@@ -463,7 +525,7 @@ namespace ProMeet.Controllers
         public string? SelectedCategory { get; set; }
         public string? SelectedCity { get; set; }
         public string? SelectedSortBy { get; set; }
-        public double? MaxPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
         public int TotalResults { get; set; }
         
         // Filter options for the view

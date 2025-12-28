@@ -100,7 +100,7 @@
                                             <i class="bi bi-clock me-1"></i>Available Today
                                         </button>
                                         <button type="button" class="btn btn-outline-secondary btn-sm" data-filter="price">
-                                            <i class="bi bi-currency-dollar me-1"></i>Under $100
+                                            Under 100 DH
                                         </button>
                                         <button type="button" class="btn btn-outline-secondary btn-sm" data-filter="verified">
                                             <i class="bi bi-patch-check me-1"></i>Verified
@@ -215,7 +215,7 @@
                                                 </div>
                                                 <div>
                                                     <i class="bi bi-tag text-warning"></i>
-                                                    <span class="small text-muted fw-bold">@service.Price.ToString("C0")</span>
+                                                    <span class="small text-muted fw-bold">@service.Price.ToString("0.##") DH</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -296,7 +296,7 @@
                                             </div>
                                             <div>
                                                 <i class="bi bi-tag text-warning"></i>
-                                                <span class="small text-muted fw-bold">@professional.Price.ToString("C0")</span>
+                                                <span class="small text-muted fw-bold">@professional.Price.ToString("0.##") DH</span>
                                             </div>
                                         </div>
                                     </div>

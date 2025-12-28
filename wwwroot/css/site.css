@@ -12,7 +12,7 @@ ProMeet - Modern Custom Stylesheet 2025
     --gradient-warning: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
     --gradient-danger: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
     --gradient-info: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-    
+
     /* Solid Colors */
     --primary-purple: #667eea;
     --secondary-purple: #764ba2;
@@ -21,7 +21,7 @@ ProMeet - Modern Custom Stylesheet 2025
     --white: #ffffff;
     --text-dark: #212529;
     --text-muted: #6c757d;
-    
+
     /* Typography */
     --font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-weight-normal: 400;
@@ -29,26 +29,26 @@ ProMeet - Modern Custom Stylesheet 2025
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
     --font-weight-black: 900;
-    
+
     /* Spacing */
     --border-radius-sm: 10px;
     --border-radius: 15px;
     --border-radius-lg: 20px;
     --border-radius-xl: 25px;
     --border-radius-pill: 50px;
-    
+
     /* Shadows */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
     --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.2);
     --shadow-colored: 0 10px 40px rgba(102, 126, 234, 0.3);
-    
+
     /* Transitions */
     --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     /* Glassmorphism */
     --glass-bg: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.18);
@@ -78,8 +78,10 @@ html {
 
 /* Layout Fixes */
 .main-content-wrapper {
-    min-height: calc(100vh - 80px - 200px); /* Full height minus header and footer */
-    padding-top: 80px; /* Space for fixed header */
+    min-height: calc(100vh - 80px - 200px);
+    /* Full height minus header and footer */
+    padding-top: 80px;
+    /* Space for fixed header */
 }
 
 /* Full-width sections */
@@ -165,11 +167,13 @@ html {
 
 /* Responsive breakpoints for better spacing */
 @media (max-width: 575.98px) {
-    .container, .container-fluid {
+
+    .container,
+    .container-fluid {
         padding-left: 0.75rem;
         padding-right: 0.75rem;
     }
-    
+
     .main-content-wrapper {
         padding-top: 70px;
     }
@@ -220,13 +224,21 @@ body {
 
 /* 2. MODERN TYPOGRAPHY
 -------------------------------------------------- */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: var(--font-weight-bold);
     color: var(--text-dark);
     letter-spacing: -0.02em;
 }
 
-.display-1, .display-2, .display-3, .display-4 {
+.display-1,
+.display-2,
+.display-3,
+.display-4 {
     font-weight: var(--font-weight-black);
     line-height: 1.2;
 }
@@ -362,7 +374,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* 5. MODERN FORMS
 -------------------------------------------------- */
-.form-control, .form-select {
+.form-control,
+.form-select {
     border-radius: var(--border-radius);
     padding: 0.875rem 1.25rem;
     border: 2px solid #e0e0e0;
@@ -370,7 +383,8 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1rem;
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus,
+.form-select:focus {
     border-color: var(--primary-purple);
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     outline: none;
@@ -388,7 +402,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Floating Labels */
-.form-floating > .form-control:focus ~ label {
+.form-floating>.form-control:focus~label {
     color: var(--primary-purple);
 }
 
@@ -475,6 +489,7 @@ h1, h2, h3, h4, h5, h6 {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -485,6 +500,7 @@ h1, h2, h3, h4, h5, h6 {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -496,6 +512,7 @@ h1, h2, h3, h4, h5, h6 {
         opacity: 0;
         transform: translateY(-30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -507,6 +524,7 @@ h1, h2, h3, h4, h5, h6 {
         opacity: 0;
         transform: translateX(-50px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -514,9 +532,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(1.05);
     }
@@ -526,6 +547,7 @@ h1, h2, h3, h4, h5, h6 {
     0% {
         background-position: -1000px 0;
     }
+
     100% {
         background-position: 1000px 0;
     }
@@ -698,8 +720,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* 14. RESPONSIVE DESIGN
@@ -708,15 +735,16 @@ h1, h2, h3, h4, h5, h6 {
     .navbar-nav .nav-item {
         margin-bottom: 0.5rem;
     }
-    
+
     .navbar-nav .btn {
         width: 100%;
     }
-    
-    h1, .display-1 {
+
+    h1,
+    .display-1 {
         font-size: 2.5rem;
     }
-    
+
     .card {
         margin-bottom: 1rem;
     }
@@ -726,7 +754,7 @@ h1, h2, h3, h4, h5, h6 {
     .btn {
         padding: 0.65rem 1.25rem;
     }
-    
+
     .container {
         padding-left: 1rem;
         padding-right: 1rem;

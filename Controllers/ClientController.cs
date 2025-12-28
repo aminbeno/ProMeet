@@ -8,6 +8,9 @@ using MongoDB.Driver;
 
 namespace ProMeet.Controllers
 {
+    /// <summary>
+    /// Manages client-specific functionalities such as viewing their appointments.
+    /// </summary>
     public class ClientController : Controller
     {
         private readonly MongoDbContext _context;
@@ -19,6 +22,9 @@ namespace ProMeet.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Displays the list of appointments for the currently logged-in client.
+        /// </summary>
         public async Task<IActionResult> Appointments()
         {
             var user = await _userManager.GetUserAsync(User);
